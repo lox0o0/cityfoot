@@ -1,47 +1,58 @@
-You are building the City Football Rewards Hub — a demo app for City Football Group showing a fan rewards platform for Man City gaming.
+You are building the City Football Rewards Hub -- a demo app for City Football Group showing a fan rewards platform for Man City gaming.
 
 ## Key Documents
-- `docs/PRD.md` — Full product requirements (8 screens, tier system, credits economy)
-- `DESIGN.md` — Design system tokens (colors, typography, components, effects)
+- `docs/PRD.md` -- Full product requirements (8 screens, tier system, credits economy)
+- `DESIGN.md` -- Design system tokens (colors, typography, components, effects)
 
 ## Tech Stack
 - Vite + React (single-page app)
 - Tailwind CSS (utility classes only)
-- Lucide React (icons)
+- Lucide React (icons -- no emojis anywhere in the UI)
+- Google Fonts: Barlow Condensed (headings) + Barlow (body)
 - No backend, no localStorage, no React Router
 
 ## Design System (Always Follow)
 
+### Fonts
+- Headings: Barlow Condensed -- always uppercase, letter-spacing 0.02em
+- Body: Barlow
+
 ### Colors
 - Background: #0A0E17 (near-black, ALWAYS dark theme)
-- Primary: #6CABDD (Man City Sky Blue)
+- Admin Background: #0F1520 (slightly lighter for admin screen)
+- Primary CTA: #e6ff00 (Electric Lime) with dark text #001838
+- Informational: #6CABDD (Man City Sky Blue) for progress bars, active nav, tier displays
 - Secondary: #1C2C5B (Navy)
-- Accent: #D4A843 (Gold — tier badges, special CTAs)
+- Premium: #D4A843 (Gold -- tier badges, credit amounts, premium elements)
 - Text: #FFFFFF primary, #8899AA secondary
 - Success: #22C55E, Error: #EF4444
 
 ### Cards (Glassmorphism)
-Always use: `bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6`
-Hover: `hover:bg-white/10 transition-all duration-300`
+Always use: `bg-white/5 backdrop-blur-xl border border-white/15 rounded-2xl p-6`
+Hover: `hover:translate-y-[-2px] hover:bg-white/10 transition-all duration-300`
+Featured: add `border-t-2 border-t-[#6CABDD]/50`
 
 ### Buttons
-- Primary: `bg-[#6CABDD] hover:bg-[#5A9BC9] text-white font-bold py-3 px-8 rounded-xl shadow-[0_0_20px_rgba(108,171,221,0.3)]`
+- Primary CTA: `bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-3 px-8 rounded-xl hover:scale-[1.02]`
+- Secondary: `bg-[#6CABDD] hover:bg-[#5A9BC9] text-white font-bold py-3 px-8 rounded-xl`
 - Gold: `bg-[#D4A843] hover:bg-[#C49A3A] text-black font-bold py-3 px-8 rounded-xl`
 - Ghost: `border border-white/20 text-white hover:bg-white/10 py-3 px-8 rounded-xl`
 
 ### Typography
-- Page titles: `text-3xl font-bold`
-- Section headers: `text-lg font-bold uppercase tracking-wider`
+- Landing hero: `text-6xl md:text-7xl font-extrabold uppercase tracking-tight`
+- Page titles: `text-4xl font-extrabold uppercase tracking-tight`
+- Section headers: `text-xl font-bold uppercase tracking-wider`
 - Body: `text-sm text-[#8899AA]`
-- Large numbers: `text-4xl font-bold` or gradient text
+- Credit balance: `text-5xl font-extrabold` with gradient text
+- Large numbers: `text-3xl font-extrabold` or gradient text
 
 ### Layout
-- Left sidebar: 70px fixed
+- Left sidebar: 70px fixed, lime active indicator bar
 - Right sidebar (dashboard only): 280px fixed
 - Main content: offset by sidebars, `p-6`
 
 ### Icons
-Lucide React only. Monochromatic. Default `w-5 h-5`.
+Lucide React only. Monochromatic. No emojis anywhere. Default `w-5 h-5`.
 
 ## Tier System
 | Tier | Credits | Color |
@@ -57,9 +68,12 @@ Lucide React only. Monochromatic. Default `w-5 h-5`.
 - NEVER use light/white backgrounds
 - NEVER use external image URLs
 - NEVER use localStorage
-- NEVER use React Router — navigation via useState
+- NEVER use React Router -- navigation via useState
+- NEVER use emojis -- always Lucide React icons
 - ALWAYS use Tailwind utility classes
 - ALWAYS use <button> for interactive elements
 - ALWAYS use glassmorphism cards with backdrop-blur
+- ALWAYS use Barlow Condensed for headings, Barlow for body
 - Credits system: totalCreditsEarned (determines tier, never decreases) vs creditBalance (spendable)
 - Animations: CSS keyframes only, no framer-motion
+- Primary CTA buttons use Electric Lime #e6ff00
