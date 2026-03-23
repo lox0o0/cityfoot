@@ -2,6 +2,15 @@ import { useEffect, useState } from 'react'
 import { Gamepad2, TrendingUp, Gift, ChevronRight, Trophy, Ticket, Shirt, MapPin, Users, Tag, Pen } from 'lucide-react'
 import McCrest from '../components/McCrest'
 
+const INTRO_VIDEO = '/assets/landing/videos/Untitled.mp4'
+
+const HERO_BG_VIDEOS = [
+  '/assets/landing/videos/vid2.mp4',
+  '/assets/landing/videos/vid3.mp4',
+  '/assets/landing/videos/vid4.mp4',
+  '/assets/landing/videos/vid5.mp4',
+]
+
 const PRIZE_ICONS = {
   'Signed Man City Jersey': Pen,
   'Etihad Stadium VIP Experience': MapPin,
@@ -42,9 +51,55 @@ const PILLARS = [
   },
 ]
 
-export default function LandingScreen({ onNavigate }) {
+function LandingIntro({ onEnter }) {
+  return (
+    <div className="fixed inset-0 z-[200] flex flex-col bg-black">
+      <video
+        className="absolute inset-0 w-full h-full object-cover"
+        autoPlay
+        muted
+        playsInline
+        onEnded={onEnter}
+        onError={onEnter}
+      >
+        <source src={INTRO_VIDEO} type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
+      <div className="relative z-10 mt-auto mb-10 flex justify-center px-6">
+        <button
+          type="button"
+          onClick={onEnter}
+          className="border border-white/30 text-white hover:bg-white/10 font-bold py-3 px-10 rounded-xl transition-all backdrop-blur-sm"
+        >
+          Skip
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function HeroBackgroundVideos({ heroVideoFailed, setHeroVideoFailed, bgIndex, setBgIndex }) {
+  if (heroVideoFailed) return null
+  return (
+    <video
+      key={bgIndex}
+      className="absolute inset-0 w-full h-full object-cover"
+      autoPlay
+      muted
+      playsInline
+      onEnded={() => setBgIndex(i => (i + 1) % HERO_BG_VIDEOS.length)}
+      onError={() => setHeroVideoFailed(true)}
+    >
+      <source src={HERO_BG_VIDEOS[bgIndex]} type="video/mp4" />
+    </video>
+  )
+}
+
+export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFinished }) {
+  const [phase, setPhase] = useState(skipIntro ? 'home' : 'intro')
   const [prizeIndex, setPrizeIndex] = useState(0)
   const [heroVideoFailed, setHeroVideoFailed] = useState(false)
+  const [bgIndex, setBgIndex] = useState(0)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -53,24 +108,26 @@ export default function LandingScreen({ onNavigate }) {
     return () => clearInterval(timer)
   }, [])
 
+  function finishIntro() {
+    setPhase('home')
+    onIntroFinished?.()
+  }
+
+  if (phase === 'intro') {
+    return <LandingIntro onEnter={finishIntro} />
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0E17] overflow-y-auto">
-      {/* Hero — drop highlight reels at public/assets/landing/videos/highlight-1.mp4 (or hero.mp4) */}
+      {/* Hero — cycling vid2–vid5 behind content */}
       <div className="relative min-h-screen flex flex-col items-center justify-center text-center px-6">
-        {!heroVideoFailed && (
-          <video
-            className="absolute inset-0 w-full h-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            onError={() => setHeroVideoFailed(true)}
-          >
-            <source src="/assets/landing/videos/highlight-1.mp4" type="video/mp4" />
-            <source src="/assets/landing/videos/hero.mp4" type="video/mp4" />
-          </video>
-        )}
-        <div className="absolute inset-0 bg-[#0A0E17]/80" />
+        <HeroBackgroundVideos
+          heroVideoFailed={heroVideoFailed}
+          setHeroVideoFailed={setHeroVideoFailed}
+          bgIndex={bgIndex}
+          setBgIndex={setBgIndex}
+        />
+        <div className="absolute inset-0 bg-[#0A0E17]/75" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#6CABDD]/12 via-[#1C2C5B]/25 to-[#0A0E17]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(108,171,221,0.12)_0%,transparent_65%)]" />
         <div
@@ -83,8 +140,8 @@ export default function LandingScreen({ onNavigate }) {
         />
 
         <div className="relative z-10 max-w-3xl mx-auto" style={{ animation: 'slide-in 0.8s ease-out' }}>
-          <div className="w-20 h-20 mx-auto mb-8 flex items-center justify-center drop-shadow-[0_8px_32px_rgba(108,171,221,0.35)]">
-            <McCrest className="w-16 h-16 md:w-20 md:h-20" alt="" />
+          <div className="w-24 h-24 md:w-28 md:h-28 mx-auto mb-8 flex items-center justify-center">
+            <McCrest className="w-full h-full max-w-[7rem] max-h-[7rem] md:max-w-[8.5rem] md:max-h-[8.5rem]" alt="Manchester City" />
           </div>
 
           <h1 className="text-6xl md:text-7xl font-extrabold uppercase tracking-tight mb-4">

@@ -25,6 +25,8 @@ export default function App() {
   const [userEmail, setUserEmail] = useState('')
   const [gamesPlayed, setGamesPlayed] = useState([])
   const [streakWeeks, setStreakWeeks] = useState(3)
+  /** Play Untitled.mp4 intro once per session; after that show landing home directly. */
+  const [landingIntroDone, setLandingIntroDone] = useState(false)
 
   // Tier up modal state
   const [showTierUp, setShowTierUp] = useState(false)
@@ -51,7 +53,13 @@ export default function App() {
   function renderScreen() {
     switch (currentScreen) {
       case 'landing':
-        return <LandingScreen onNavigate={handleNavigate} />
+        return (
+          <LandingScreen
+            onNavigate={handleNavigate}
+            skipIntro={landingIntroDone}
+            onIntroFinished={() => setLandingIntroDone(true)}
+          />
+        )
 
       case 'onboarding':
         return (
