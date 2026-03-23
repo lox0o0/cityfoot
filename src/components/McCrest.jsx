@@ -1,9 +1,11 @@
 /**
- * Man City crest — prefers the badge PNG in public; falls back to SVG.
+ * Man City crest — bundled PNG first (reliable in dev/deploy), then public fallbacks.
  */
 import { useState } from 'react'
+import mcfcBadge from '../assets/mcfc-badge.png'
 
 const CREST_SOURCES = [
+  mcfcBadge,
   '/assets/shared/logos/Manchester_City_FC_badge.svg.png',
   '/assets/shared/logos/man-city-crest.svg',
 ]
@@ -14,7 +16,7 @@ export default function McCrest({ className = 'w-10 h-10', alt = 'Manchester Cit
   if (srcIndex >= CREST_SOURCES.length) {
     return (
       <div
-        className={`rounded-full bg-gradient-to-br from-[#6CABDD]/40 to-[#1C2C5B]/80 border border-[#6CABDD]/50 ${className}`}
+        className={`rounded-lg bg-gradient-to-br from-[#6CABDD]/40 to-[#1C2C5B]/80 border border-[#6CABDD]/50 ${className}`}
         aria-hidden
       />
     )
@@ -24,7 +26,11 @@ export default function McCrest({ className = 'w-10 h-10', alt = 'Manchester Cit
     <img
       src={CREST_SOURCES[srcIndex]}
       alt={alt}
-      className={`object-contain select-none drop-shadow-[0_4px_20px_rgba(255,255,255,0.35)] ${className}`}
+      width={256}
+      height={256}
+      loading="eager"
+      decoding="async"
+      className={`object-contain object-center select-none drop-shadow-[0_4px_20px_rgba(255,255,255,0.35)] ${className}`}
       draggable={false}
       onError={() => setSrcIndex(i => i + 1)}
     />

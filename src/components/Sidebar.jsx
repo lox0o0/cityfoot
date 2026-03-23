@@ -11,10 +11,15 @@ const NAV_ITEMS = [
 
 export default function Sidebar({ currentScreen, onNavigate }) {
   return (
-    <div className="fixed left-0 top-0 h-full w-[70px] bg-[#0A0E17] border-r border-white/10 flex flex-col items-center py-6 z-30">
-      <div className="w-12 h-12 rounded-full bg-gradient-to-b from-[#6CABDD]/30 to-[#1C2C5B]/80 border border-[#6CABDD]/40 flex items-center justify-center mb-4 p-1.5">
-        <McCrest className="w-9 h-9" alt="" />
-      </div>
+    <div className="fixed left-0 top-0 h-full w-[70px] bg-[#0A0E17] border-r border-white/10 flex flex-col items-center py-5 z-30">
+      <button
+        type="button"
+        onClick={() => onNavigate('dashboard')}
+        className="mb-4 flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] p-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.35)] transition-all hover:border-[#6CABDD]/40 hover:bg-white/10"
+        aria-label="Manchester City — Home"
+      >
+        <McCrest className="h-11 w-11" alt="" />
+      </button>
 
       <div className="w-10 h-px bg-white/15 mb-4" />
 

@@ -9,7 +9,7 @@ import { getTierForCredits, getNextTier } from '../utils/credits'
 const ACTIVITIES = [
   { icon: Gamepad2, label: 'Play EA FC', credits: 50, desc: 'Launch and play a match', cta: 'Play' },
   { icon: Gamepad2, label: 'Play Roblox Blue Moon', credits: 30, desc: 'Complete a quest in Blue Moon', cta: 'Play' },
-  { icon: Share2, label: 'Share on Social', credits: 20, desc: 'Share your tier badge on X or Instagram', cta: 'Share' },
+  { icon: Share2, label: 'Share on Social', credits: 20, desc: 'Share your tier badge on X or Instagram', cta: 'Share', socialIcons: ['/assets/shared/icons/x.png', '/assets/shared/icons/instagram.png'] },
   { icon: UserPlus, label: 'Refer a Friend', credits: 100, desc: 'Invite a friend to join City Rewards', cta: 'Invite' },
   { icon: UserCheck, label: 'Complete Profile', credits: 50, desc: 'Add phone number and preferences', cta: 'Complete' },
 ]
@@ -18,7 +18,8 @@ const SPONSORS = [
   {
     name: 'Puma -- Kit Day Deal',
     icon: Shirt,
-    logoSrc: '/assets/shared/sponsors/puma.svg',
+    logoSrc: '/assets/shared/sponsors/puma-white.png',
+    altText: 'Puma',
     desc: 'Shop the latest Puma x Man City collection using code CITYCREDITS at checkout',
     benefit: '20% off + 40 City Credits',
     availability: 'Available: Ongoing',
@@ -27,7 +28,8 @@ const SPONSORS = [
   {
     name: 'Etihad Airways -- Fly with City',
     icon: Plane,
-    logoSrc: '/assets/shared/sponsors/etihad.svg',
+    logoSrc: '/assets/shared/sponsors/etihad-white.svg',
+    altText: 'Etihad Airways',
     desc: 'Complete a 2-min travel quiz and discover exclusive Etihad offers for Man City fans',
     benefit: '1,000 Etihad Guest Miles + 30 City Credits',
     availability: 'Available: Ongoing',
@@ -36,7 +38,8 @@ const SPONSORS = [
   {
     name: 'Asahi Super Dry -- Matchday Pint',
     icon: Beer,
-    logoSrc: '/assets/shared/sponsors/asahi.svg',
+    logoSrc: '/assets/shared/sponsors/asahi-white.jpg',
+    altText: 'Asahi Super Dry',
     desc: 'Show your City Rewards profile at any Etihad Stadium bar on matchday',
     benefit: 'Free Asahi Super Dry + 25 City Credits',
     availability: 'Available: Home matchdays only',
@@ -45,20 +48,18 @@ const SPONSORS = [
   },
 ]
 
-function SponsorBrand({ logoSrc, Icon }) {
+function SponsorBrand({ logoSrc, altText, Icon }) {
   const [failed, setFailed] = useState(false)
   if (failed || !logoSrc) {
     return <Icon className="w-8 h-8 text-[#6CABDD] mb-3" />
   }
   return (
-    <div className="h-10 mb-3 flex items-center">
-      <img
-        src={logoSrc}
-        alt=""
-        className="max-h-8 w-auto max-w-[140px] object-contain opacity-90 brightness-0 invert"
-        onError={() => setFailed(true)}
-      />
-    </div>
+    <img
+      src={logoSrc}
+      alt={altText || ''}
+      className="h-8 object-contain mb-3 opacity-90"
+      onError={() => setFailed(true)}
+    />
   )
 }
 
@@ -187,7 +188,12 @@ export default function DashboardScreen({
                   <act.icon className="w-5 h-5 text-[#6CABDD]" />
                 </div>
                 <div>
-                  <p className="text-white font-medium text-sm">{act.label}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-white font-medium text-sm">{act.label}</p>
+                    {act.socialIcons && act.socialIcons.map((src, j) => (
+                      <img key={j} src={src} alt="" className="w-4 h-4 rounded-full object-cover" />
+                    ))}
+                  </div>
                   <p className="text-[#8899AA] text-xs">{act.desc}</p>
                 </div>
               </div>
@@ -237,7 +243,7 @@ export default function DashboardScreen({
             const SponsorIcon = sponsor.icon
             return (
               <GlassCard key={i} className="hover:bg-white/10 hover:translate-y-[-2px] transition-all duration-300 flex flex-col border-t-2 border-t-[#6CABDD]/50">
-                <SponsorBrand logoSrc={sponsor.logoSrc} Icon={SponsorIcon} />
+                <SponsorBrand logoSrc={sponsor.logoSrc} altText={sponsor.altText} Icon={SponsorIcon} />
                 <h3 className="text-lg font-semibold text-white mb-2">{sponsor.name}</h3>
                 <p className="text-sm text-[#8899AA] mb-3 flex-1">{sponsor.desc}</p>
                 <div className="bg-[#D4A843]/10 rounded-lg px-3 py-2 mb-3">

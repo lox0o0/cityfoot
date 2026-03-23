@@ -133,7 +133,13 @@ export default function App() {
         )
 
       default:
-        return <LandingScreen onNavigate={handleNavigate} />
+        return (
+          <LandingScreen
+            onNavigate={handleNavigate}
+            skipIntro={landingIntroDone}
+            onIntroFinished={() => setLandingIntroDone(true)}
+          />
+        )
     }
   }
 

@@ -15,7 +15,7 @@ export default function UserCard({ userName, creditBalance, totalCreditsEarned, 
   const tierMeta = TIERS.find(x => x.name === tier.name) || TIERS[0]
 
   const recentActivity = [
-    gamesPlayed.length > 0 ? `Played ${gamesPlayed[gamesPlayed.length - 1]}` : 'No games yet',
+    gamesPlayed.length > 0 ? `Played ${gamesPlayed[gamesPlayed.length - 1]?.name || gamesPlayed[gamesPlayed.length - 1]}` : 'No games yet',
     `${streakWeeks} week streak`,
     `${creditBalance} credits available`,
   ]

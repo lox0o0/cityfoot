@@ -2,11 +2,11 @@ import { Shield, Check, X, User, Mail, Phone, Calendar, Link2, Gamepad2, Trophy,
 import { getTierForCredits } from '../utils/credits'
 
 const SOCIAL_NAMES = {
-  x: { name: 'X (Twitter)', handle: '@CityFan' },
-  instagram: { name: 'Instagram', handle: '@cityfan' },
-  facebook: { name: 'Facebook', handle: 'City Fan' },
-  discord: { name: 'Discord', handle: 'CityFan#1234' },
-  youtube: { name: 'YouTube', handle: 'CityFan' },
+  x: { name: 'X (Twitter)', handle: '@CityFan', icon: '/assets/shared/icons/x.png' },
+  instagram: { name: 'Instagram', handle: '@cityfan', icon: '/assets/shared/icons/instagram.png' },
+  facebook: { name: 'Facebook', handle: 'City Fan', icon: '/assets/shared/icons/facebook.png' },
+  discord: { name: 'Discord', handle: 'CityFan#1234', icon: '/assets/shared/icons/discord.png' },
+  youtube: { name: 'YouTube', handle: 'CityFan', icon: null },
 }
 
 export default function AdminScreen({
@@ -24,7 +24,7 @@ export default function AdminScreen({
     day: 'numeric', month: 'long', year: 'numeric'
   })
 
-  const uniqueGames = [...new Set(gamesPlayed)]
+  const uniqueGames = [...new Set(gamesPlayed.map(g => typeof g === 'string' ? g : g.name))]
 
   return (
     <div className="p-6 space-y-6 bg-[#0F1520] min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
@@ -99,7 +99,9 @@ export default function AdminScreen({
               return (
                 <div key={id} className="flex items-center justify-between bg-white/5 rounded-lg px-4 py-2.5">
                   <div className="flex items-center gap-2">
-                    {connected ? (
+                    {info.icon ? (
+                      <img src={info.icon} alt="" className={`w-5 h-5 rounded-full object-cover ${!connected ? 'grayscale opacity-50' : ''}`} />
+                    ) : connected ? (
                       <Check className="w-4 h-4 text-[#22C55E]" />
                     ) : (
                       <X className="w-4 h-4 text-[#EF4444]" />
@@ -115,7 +117,10 @@ export default function AdminScreen({
 
             {/* Game accounts */}
             {['EA FC', 'Roblox'].map(game => {
-              const played = gamesPlayed.some(g => g.toLowerCase().includes(game.toLowerCase().split(' ')[0]))
+              const played = gamesPlayed.some(g => {
+                const name = typeof g === 'string' ? g : g.name
+                return name.toLowerCase().includes(game.toLowerCase().split(' ')[0])
+              })
               return (
                 <div key={game} className="flex items-center justify-between bg-white/5 rounded-lg px-4 py-2.5">
                   <div className="flex items-center gap-2">

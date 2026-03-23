@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Gamepad2, TrendingUp, Gift, ChevronRight, Trophy, Ticket, Shirt, MapPin, Users, Tag, Pen } from 'lucide-react'
 import McCrest from '../components/McCrest'
+import TopLeftCrest from '../components/TopLeftCrest'
 
 const INTRO_VIDEO = '/assets/landing/videos/Untitled.mp4'
 
-const HERO_BG_VIDEOS = [
+const HERO_VIDEOS = [
+  '/assets/landing/videos/Untitled.mp4',
   '/assets/landing/videos/vid2.mp4',
   '/assets/landing/videos/vid3.mp4',
   '/assets/landing/videos/vid4.mp4',
@@ -55,7 +57,7 @@ function LandingIntro({ onEnter }) {
   return (
     <div className="fixed inset-0 z-[200] flex flex-col bg-black">
       <video
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 z-0 w-full h-full object-cover"
         autoPlay
         muted
         playsInline
@@ -64,7 +66,8 @@ function LandingIntro({ onEnter }) {
       >
         <source src={INTRO_VIDEO} type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
+      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
+      <TopLeftCrest variant="overlay" />
       <div className="relative z-10 mt-auto mb-10 flex justify-center px-6">
         <button
           type="button"
@@ -78,28 +81,11 @@ function LandingIntro({ onEnter }) {
   )
 }
 
-function HeroBackgroundVideos({ heroVideoFailed, setHeroVideoFailed, bgIndex, setBgIndex }) {
-  if (heroVideoFailed) return null
-  return (
-    <video
-      key={bgIndex}
-      className="absolute inset-0 w-full h-full object-cover"
-      autoPlay
-      muted
-      playsInline
-      onEnded={() => setBgIndex(i => (i + 1) % HERO_BG_VIDEOS.length)}
-      onError={() => setHeroVideoFailed(true)}
-    >
-      <source src={HERO_BG_VIDEOS[bgIndex]} type="video/mp4" />
-    </video>
-  )
-}
-
 export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFinished }) {
   const [phase, setPhase] = useState(skipIntro ? 'home' : 'intro')
   const [prizeIndex, setPrizeIndex] = useState(0)
-  const [heroVideoFailed, setHeroVideoFailed] = useState(false)
-  const [bgIndex, setBgIndex] = useState(0)
+  const [currentVideo, setCurrentVideo] = useState(0)
+  const videoRef = useRef(null)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -107,6 +93,25 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
     }, 4000)
     return () => clearInterval(timer)
   }, [])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const handleEnded = () => {
+      setCurrentVideo(prev => (prev + 1) % HERO_VIDEOS.length)
+    }
+
+    video.addEventListener('ended', handleEnded)
+    return () => video.removeEventListener('ended', handleEnded)
+  }, [currentVideo])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    video.src = HERO_VIDEOS[currentVideo]
+    video.play().catch(() => {})
+  }, [currentVideo])
 
   function finishIntro() {
     setPhase('home')
@@ -119,27 +124,24 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
 
   return (
     <div className="min-h-screen bg-[#0A0E17] overflow-y-auto">
-      {/* Hero — cycling vid2–vid5 behind content */}
-      <div className="relative min-h-screen flex flex-col items-center justify-center text-center px-6">
-        <HeroBackgroundVideos
-          heroVideoFailed={heroVideoFailed}
-          setHeroVideoFailed={setHeroVideoFailed}
-          bgIndex={bgIndex}
-          setBgIndex={setBgIndex}
-        />
-        <div className="absolute inset-0 bg-[#0A0E17]/75" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#6CABDD]/12 via-[#1C2C5B]/25 to-[#0A0E17]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(108,171,221,0.12)_0%,transparent_65%)]" />
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
-            backgroundRepeat: 'repeat',
-            backgroundSize: '256px 256px',
-          }}
+      <TopLeftCrest />
+      {/* Hero — cycling highlight videos behind content */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Video Background */}
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          playsInline
+          src={HERO_VIDEOS[0]}
         />
 
-        <div className="relative z-10 max-w-3xl mx-auto" style={{ animation: 'slide-in 0.8s ease-out' }}>
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-[#0A0E17]" />
+
+        {/* Existing hero content */}
+        <div className="relative z-10 text-center px-4 max-w-3xl mx-auto" style={{ animation: 'slide-in 0.8s ease-out' }}>
           <div className="w-24 h-24 md:w-28 md:h-28 mx-auto mb-8 flex items-center justify-center">
             <McCrest className="w-full h-full max-w-[7rem] max-h-[7rem] md:max-w-[8.5rem] md:max-h-[8.5rem]" alt="Manchester City" />
           </div>
@@ -165,7 +167,7 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
 
           <p className="text-[#8899AA] text-sm mt-4">Free to join &middot; Real rewards &middot; Play your way</p>
         </div>
-      </div>
+      </section>
 
       {/* Value Pillars — horizontal 3-column grid on md+ */}
       <div className="max-w-6xl mx-auto px-6 py-16">

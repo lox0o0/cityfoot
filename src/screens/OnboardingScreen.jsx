@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { Mail, ChevronRight, Check, X as XIcon } from 'lucide-react'
 import ProgressBar from '../components/ProgressBar'
 import CreditAward from '../components/CreditAward'
+import TopLeftCrest from '../components/TopLeftCrest'
 
 const SOCIAL_PLATFORMS = [
-  { id: 'x', name: 'X (Twitter)', credits: 30, abbr: 'X', handle: '@CityFan' },
-  { id: 'instagram', name: 'Instagram', credits: 25, abbr: 'IG', handle: '@cityfan' },
-  { id: 'facebook', name: 'Facebook', credits: 25, abbr: 'FB', handle: 'City Fan' },
-  { id: 'discord', name: 'Discord', credits: 20, abbr: 'DC', handle: 'CityFan#1234' },
-  { id: 'youtube', name: 'YouTube', credits: 20, abbr: 'YT', handle: 'CityFan' },
+  { id: 'x', name: 'X (Twitter)', credits: 30, abbr: 'X', handle: '@CityFan', icon: '/assets/shared/icons/x.png' },
+  { id: 'instagram', name: 'Instagram', credits: 25, abbr: 'IG', handle: '@cityfan', icon: '/assets/shared/icons/instagram.png' },
+  { id: 'facebook', name: 'Facebook', credits: 25, abbr: 'FB', handle: 'City Fan', icon: '/assets/shared/icons/facebook.png' },
+  { id: 'discord', name: 'Discord', credits: 20, abbr: 'DC', handle: 'CityFan#1234', icon: '/assets/shared/icons/discord.png' },
+  { id: 'youtube', name: 'YouTube', credits: 20, abbr: 'YT', handle: 'CityFan', icon: null },
 ]
 
 export default function OnboardingScreen({
@@ -75,6 +76,7 @@ export default function OnboardingScreen({
 
   return (
     <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center p-6">
+      <TopLeftCrest />
       <CreditAward amount={creditAmount} show={showCredit} onDone={() => setShowCredit(false)} />
 
       <div className="max-w-lg w-full" style={{ animation: 'slide-in 0.5s ease-out' }}>
@@ -110,14 +112,14 @@ export default function OnboardingScreen({
                   onClick={() => handleSignIn('google')}
                   className="w-full bg-white/10 hover:bg-white/15 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02]"
                 >
-                  <span className="text-lg">G</span>
+                  <img src="/assets/shared/icons/google.jpg" alt="Google" className="w-5 h-5 rounded-full" />
                   Continue with Google
                 </button>
                 <button
                   onClick={() => handleSignIn('apple')}
                   className="w-full bg-white/10 hover:bg-white/15 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02]"
                 >
-                  <span className="text-lg"></span>
+                  <img src="/assets/shared/icons/apple.jpg" alt="Apple" className="w-5 h-5 rounded-full" />
                   Continue with Apple
                 </button>
 
@@ -174,9 +176,13 @@ export default function OnboardingScreen({
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold">
-                          {platform.abbr}
-                        </div>
+                        {platform.icon ? (
+                          <img src={platform.icon} alt={platform.name} className={`w-8 h-8 rounded-full object-cover ${!connected ? 'grayscale' : ''}`} />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold">
+                            {platform.abbr}
+                          </div>
+                        )}
                         <div className="text-left">
                           <p className="text-white font-medium text-sm">{platform.name}</p>
                           {connected && (
