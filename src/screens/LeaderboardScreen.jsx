@@ -71,7 +71,10 @@ export default function LeaderboardScreen({ userName, totalCreditsEarned }) {
   const userTier = getTierForCredits(totalCreditsEarned)
 
   return (
-    <div className="p-6 max-w-3xl mx-auto overflow-hidden" style={{ animation: 'slide-in 0.4s ease-out' }}>
+    <div className="relative min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/assets/leaderboard/backgrounds/images.jpeg')" }} />
+      <div className="absolute inset-0 bg-[#0A0E17]/85" />
+      <div className="relative z-10 p-6 max-w-3xl mx-auto overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <Trophy className="w-6 h-6 text-[#D4A843]" />
@@ -201,6 +204,7 @@ export default function LeaderboardScreen({ userName, totalCreditsEarned }) {
           You need 450 more credits to reach Top 100
         </p>
       </GlassCard>
+      </div>
     </div>
   )
 }

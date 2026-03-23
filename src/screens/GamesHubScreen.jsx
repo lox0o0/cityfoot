@@ -56,7 +56,10 @@ export default function GamesHubScreen({
   )
 
   return (
-    <div className="p-6" style={{ animation: 'slide-in 0.4s ease-out' }}>
+    <div className="relative min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/assets/leaderboard/backgrounds/stadium.jpeg')" }} />
+      <div className="absolute inset-0 bg-[#0A0E17]/85" />
+      <div className="relative z-10 p-6">
       <CreditAward
         key={creditAmount}
         amount={creditAmount}
@@ -188,6 +191,7 @@ export default function GamesHubScreen({
             </GlassCard>
           )
         })}
+      </div>
       </div>
     </div>
   )

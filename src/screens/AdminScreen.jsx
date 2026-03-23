@@ -27,7 +27,10 @@ export default function AdminScreen({
   const uniqueGames = [...new Set(gamesPlayed.map(g => typeof g === 'string' ? g : g.name))]
 
   return (
-    <div className="p-6 space-y-6 bg-[#0F1520] min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
+    <div className="relative min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/assets/leaderboard/backgrounds/adminpic.webp')" }} />
+      <div className="absolute inset-0 bg-[#0F1520]/90" />
+      <div className="relative z-10 p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <Shield className="w-6 h-6 text-[#6CABDD]" />
@@ -189,6 +192,7 @@ export default function AdminScreen({
           they engage with. You can reach them directly via email, push notification, or any
           of their connected channels.
         </p>
+      </div>
       </div>
     </div>
   )

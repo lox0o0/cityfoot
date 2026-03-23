@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Flame, Star, Gamepad2, Share2, UserPlus, UserCheck, Shirt, Plane, Beer } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
 import TierBadge from '../components/TierBadge'
@@ -97,6 +97,30 @@ export default function DashboardScreen({
   const tier = getTierForCredits(totalCreditsEarned)
   const nextTier = getNextTier(totalCreditsEarned)
 
+  const videoRef = useRef(null)
+  const [currentVideo, setCurrentVideo] = useState(0)
+  const DASH_VIDEOS = [
+    '/assets/landing/videos/vid2.mp4',
+    '/assets/landing/videos/vid3.mp4',
+    '/assets/landing/videos/vid4.mp4',
+    '/assets/landing/videos/vid5.mp4',
+  ]
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    const handleEnded = () => setCurrentVideo(prev => (prev + 1) % DASH_VIDEOS.length)
+    video.addEventListener('ended', handleEnded)
+    return () => video.removeEventListener('ended', handleEnded)
+  }, [currentVideo])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    video.src = DASH_VIDEOS[currentVideo]
+    video.play().catch(() => {})
+  }, [currentVideo])
+
   const btnLime = 'bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-2 px-6 rounded-xl text-sm transition-all hover:scale-[1.02]'
   const btnGold = 'bg-[#D4A843] hover:bg-[#C49A3A] text-black font-bold py-2 px-6 rounded-xl text-sm transition-all hover:scale-[1.02]'
 
@@ -144,7 +168,15 @@ export default function DashboardScreen({
   ]
 
   return (
-    <div className="p-6 space-y-6" style={{ animation: 'slide-in 0.4s ease-out' }}>
+    <div className="relative min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
+      <video
+        ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover"
+        autoPlay muted playsInline
+        src={DASH_VIDEOS[0]}
+      />
+      <div className="absolute inset-0 bg-[#0A0E17]/80" />
+      <div className="relative z-10 p-6 space-y-6">
       {/* Hero Carousel */}
       <Carousel slides={carouselSlides} />
 
@@ -260,6 +292,7 @@ export default function DashboardScreen({
             )
           })}
         </div>
+      </div>
       </div>
     </div>
   )

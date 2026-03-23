@@ -42,7 +42,10 @@ export default function RewardsStoreScreen({
   }
 
   return (
-    <div className="p-6 space-y-6" style={{ animation: 'slide-in 0.4s ease-out' }}>
+    <div className="relative min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/assets/leaderboard/backgrounds/crowd.jpeg')" }} />
+      <div className="absolute inset-0 bg-[#0A0E17]/85" />
+      <div className="relative z-10 p-6 space-y-6">
       <Confetti show={showConfetti} onDone={() => setShowConfetti(false)} />
 
       {/* Confirmation Modal */}
@@ -160,6 +163,7 @@ export default function RewardsStoreScreen({
             </GlassCard>
           )
         })}
+      </div>
       </div>
     </div>
   )
