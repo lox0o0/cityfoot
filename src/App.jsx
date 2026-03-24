@@ -12,7 +12,7 @@ import AdminScreen from './screens/AdminScreen'
 import { getTierForCredits, getNextTier } from './utils/credits'
 import { TIERS } from './data/tiers'
 
-const SCREENS_WITH_SIDEBAR = ['dashboard', 'games', 'leaderboard', 'rewards', 'admin']
+const SCREENS_WITH_SIDEBAR = ['dashboard', 'games', 'leaderboard', 'rewards', 'account']
 const SCREENS_WITH_USER_CARD = ['dashboard']
 
 export default function App() {
@@ -96,6 +96,8 @@ export default function App() {
             gamesPlayed={gamesPlayed}
             setGamesPlayed={setGamesPlayed}
             onTierUp={handleTierUp}
+            connectedAccounts={connectedAccounts}
+            setConnectedAccounts={setConnectedAccounts}
           />
         )
 
@@ -118,7 +120,7 @@ export default function App() {
           />
         )
 
-      case 'admin':
+      case 'account':
         return (
           <AdminScreen
             userName={userName}
@@ -159,7 +161,7 @@ export default function App() {
 
       {/* Sidebar */}
       {showSidebar && (
-        <Sidebar currentScreen={currentScreen} onNavigate={handleNavigate} />
+        <Sidebar currentScreen={currentScreen} onNavigate={handleNavigate} streakWeeks={streakWeeks} />
       )}
 
       {/* Main Content */}
@@ -183,8 +185,6 @@ export default function App() {
           userName={userName}
           creditBalance={creditBalance}
           totalCreditsEarned={totalCreditsEarned}
-          gamesPlayed={gamesPlayed}
-          streakWeeks={streakWeeks}
         />
       )}
     </div>

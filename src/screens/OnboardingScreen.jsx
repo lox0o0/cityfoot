@@ -9,7 +9,7 @@ const SOCIAL_PLATFORMS = [
   { id: 'instagram', name: 'Instagram', credits: 25, abbr: 'IG', handle: '@cityfan', icon: '/assets/shared/icons/instagram.png' },
   { id: 'facebook', name: 'Facebook', credits: 25, abbr: 'FB', handle: 'City Fan', icon: '/assets/shared/icons/facebook.png' },
   { id: 'discord', name: 'Discord', credits: 20, abbr: 'DC', handle: 'CityFan#1234', icon: '/assets/shared/icons/discord.png' },
-  { id: 'youtube', name: 'YouTube', credits: 20, abbr: 'YT', handle: 'CityFan', icon: null },
+  { id: 'youtube', name: 'YouTube', credits: 20, abbr: 'YT', handle: 'CityFan', icon: '/assets/shared/icons/youtube.png' },
 ]
 
 export default function OnboardingScreen({
@@ -75,7 +75,9 @@ export default function OnboardingScreen({
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] flex items-center justify-center p-6">
+    <div className="min-h-screen relative flex items-center justify-center p-6" style={{ backgroundImage: "url('/assets/leaderboard/backgrounds/stadium.jpeg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="absolute inset-0 bg-[#0A0E17]/90" />
+      <div className="relative z-10 w-full flex flex-col items-center">
       <TopLeftCrest />
       <CreditAward amount={creditAmount} show={showCredit} onDone={() => setShowCredit(false)} />
 
@@ -177,9 +179,11 @@ export default function OnboardingScreen({
                     >
                       <div className="flex items-center gap-3">
                         {platform.icon ? (
-                          <img src={platform.icon} alt={platform.name} className={`w-8 h-8 rounded-full object-cover ${!connected ? 'grayscale' : ''}`} />
+                          <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <img src={platform.icon} alt={platform.name} className={`w-5 h-5 object-contain ${!connected ? 'grayscale' : ''}`} />
+                          </div>
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold">
+                          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                             {platform.abbr}
                           </div>
                         )}
@@ -253,6 +257,22 @@ export default function OnboardingScreen({
                     )
                   })}
                 </div>
+
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <p className="text-[#6CABDD] text-sm font-semibold mb-3 uppercase tracking-wider">What you can claim right now</p>
+                  <div className="space-y-2">
+                    {[
+                      { icon: 'Image', name: 'Digital Wallpaper Pack', cost: 50 },
+                      { icon: 'Shirt', name: 'Early Access: Kit Launch', cost: 100 },
+                      { icon: 'Tag', name: 'Puma Voucher £10 Off', cost: 100 },
+                    ].map(r => (
+                      <div key={r.name} className="flex items-center justify-between bg-white/5 rounded-xl px-4 py-3">
+                        <span className="text-white text-sm">{r.name}</span>
+                        <span className="text-[#D4A843] text-sm font-bold">{r.cost} credits</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <button
@@ -265,6 +285,7 @@ export default function OnboardingScreen({
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   )

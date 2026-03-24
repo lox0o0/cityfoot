@@ -1,5 +1,5 @@
 import TierBadge from './TierBadge'
-import { getTierForCredits } from '../utils/credits'
+import { getTierForCredits, getNextTier } from '../utils/credits'
 import { TIERS } from '../data/tiers'
 
 function getInitials(name) {
@@ -10,18 +10,20 @@ function getInitials(name) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
 }
 
-export default function UserCard({ userName, creditBalance, totalCreditsEarned, gamesPlayed, streakWeeks }) {
+const HARDCODED_ACTIVITY = [
+  'Played EA Sports FC 26',
+  'Connected Instagram',
+  'Claimed Digital Wallpaper',
+  'Played Roblox — Blue Moon',
+]
+
+export default function UserCard({ userName, creditBalance, totalCreditsEarned }) {
   const tier = getTierForCredits(totalCreditsEarned)
   const tierMeta = TIERS.find(x => x.name === tier.name) || TIERS[0]
-
-  const recentActivity = [
-    gamesPlayed.length > 0 ? `Played ${gamesPlayed[gamesPlayed.length - 1]?.name || gamesPlayed[gamesPlayed.length - 1]}` : 'No games yet',
-    `${streakWeeks} week streak`,
-    `${creditBalance} credits available`,
-  ]
+  const nextTier = getNextTier(totalCreditsEarned)
 
   return (
-    <div className="fixed right-0 top-0 h-full w-[280px] bg-white/5 backdrop-blur-xl border-l border-white/15 p-6 z-20 overflow-y-auto">
+    <div className="fixed right-0 top-0 h-full w-[280px] bg-[#0A0E17]/60 backdrop-blur-xl border-l border-white/15 p-6 z-20 overflow-y-auto">
       <div className="flex flex-col items-center text-center mb-6 pt-4">
         <div
           className="w-16 h-16 rounded-full flex items-center justify-center mb-3 text-lg font-extrabold text-white bg-gradient-to-br from-[#6CABDD]/35 to-[#1C2C5B]/90"
@@ -44,10 +46,28 @@ export default function UserCard({ userName, creditBalance, totalCreditsEarned, 
         </p>
       </div>
 
+      {/* Tier Rewards Summary */}
+      {nextTier && (
+        <div className="bg-white/5 rounded-xl p-4 mb-6">
+          <p className="text-[#8899AA] text-xs uppercase tracking-wider mb-2">Next Tier</p>
+          <p className="text-sm font-bold text-white mb-1">{nextTier.name}</p>
+          <p className="text-xs text-[#8899AA] mb-2">{nextTier.threshold - totalCreditsEarned} credits to go</p>
+          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${Math.min(100, (totalCreditsEarned / nextTier.threshold) * 100)}%`,
+                backgroundColor: nextTier.color,
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <div>
         <p className="text-[#8899AA] text-xs uppercase tracking-wider mb-3">Recent Activity</p>
         <div className="space-y-2">
-          {recentActivity.map((item, i) => (
+          {HARDCODED_ACTIVITY.map((item, i) => (
             <div key={i} className="text-sm text-white/70 bg-white/5 rounded-lg px-3 py-2">
               {item}
             </div>

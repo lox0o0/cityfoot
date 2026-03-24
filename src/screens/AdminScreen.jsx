@@ -34,12 +34,9 @@ export default function AdminScreen({
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <Shield className="w-6 h-6 text-[#6CABDD]" />
-        <h1 className="text-4xl font-extrabold uppercase tracking-tight text-white">City Football -- Audience Dashboard</h1>
-        <span className="ml-3 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider bg-[#6CABDD]/20 text-[#6CABDD] border border-[#6CABDD]/30">
-          Admin View
-        </span>
+        <h1 className="text-4xl font-extrabold uppercase tracking-tight text-white">My Account</h1>
       </div>
-      <p className="text-[#8899AA]">Backend data capture view -- what City Football sees</p>
+      <p className="text-[#8899AA]">Your profile and connected accounts</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Profile Card */}

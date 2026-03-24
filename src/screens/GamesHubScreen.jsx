@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { Gamepad2, X, Monitor, Smartphone } from 'lucide-react'
+import { Gamepad2, X, Monitor, Smartphone, Link2, Users, Target, Trophy, Zap } from 'lucide-react'
 import { GAMES } from '../data/games'
 import GlassCard from '../components/GlassCard'
 import CreditAward from '../components/CreditAward'
@@ -25,12 +25,30 @@ export default function GamesHubScreen({
   gamesPlayed,
   setGamesPlayed,
   onTierUp,
+  connectedAccounts,
+  setConnectedAccounts,
 }) {
   const [launchingGame, setLaunchingGame] = useState(null)
   const [connectingGame, setConnectingGame] = useState(null)
   const [showCredit, setShowCredit] = useState(false)
   const [creditAmount, setCreditAmount] = useState(0)
   const [launchPlatform, setLaunchPlatform] = useState(null)
+  const [connectedGames, setConnectedGames] = useState([])
+
+  const handleConnectGame = useCallback((game) => {
+    if (connectedGames.includes(game.id)) return
+    setConnectedGames(g => [...g, game.id])
+    const credits = game.connectCredits || 20
+    setCreditBalance(b => b + credits)
+    setTotalCreditsEarned(t => {
+      const newTotal = t + credits
+      onTierUp(t, newTotal)
+      return newTotal
+    })
+    setCreditAmount(credits)
+    setShowCredit(true)
+    setTimeout(() => setShowCredit(false), 1500)
+  }, [connectedGames, onTierUp, setCreditBalance, setTotalCreditsEarned])
 
   const handlePlatformSelect = useCallback(
     (game, platform) => {
@@ -180,17 +198,109 @@ export default function GamesHubScreen({
 
               <div className="flex items-center justify-between">
                 <span className="text-[#D4A843] font-bold text-sm">+{game.credits} credits</span>
-                <button
-                  onClick={() => setConnectingGame(game)}
-                  disabled={!!launchingGame}
-                  className="bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-2 px-5 rounded-xl text-sm transition-all hover:scale-[1.02] disabled:opacity-50"
-                >
-                  Play Now
-                </button>
+                <div className="flex gap-2">
+                  {!connectedGames.includes(game.id) ? (
+                    <button
+                      onClick={() => handleConnectGame(game)}
+                      className="border border-[#6CABDD]/50 text-[#6CABDD] hover:bg-[#6CABDD]/10 font-bold py-2 px-3 rounded-xl text-sm transition-all flex items-center gap-1.5"
+                    >
+                      <Link2 className="w-3.5 h-3.5" />
+                      Connect
+                    </button>
+                  ) : (
+                    <span className="text-[#6CABDD] text-xs font-medium flex items-center gap-1 px-3 py-2">
+                      <Link2 className="w-3.5 h-3.5" /> Linked
+                    </span>
+                  )}
+                  <button
+                    onClick={() => setConnectingGame(game)}
+                    disabled={!!launchingGame}
+                    className="bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-2 px-5 rounded-xl text-sm transition-all hover:scale-[1.02] disabled:opacity-50"
+                  >
+                    Play Now
+                  </button>
+                </div>
               </div>
             </GlassCard>
           )
         })}
+      </div>
+
+      {/* Weekly Challenge */}
+      <div className="mt-10">
+        <GlassCard className="relative overflow-hidden border-[#e6ff00]/20">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#e6ff00]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#e6ff00]/10 flex items-center justify-center shrink-0">
+              <Target className="w-6 h-6 text-[#e6ff00]" />
+            </div>
+            <div className="flex-1">
+              <p className="text-[#e6ff00] text-xs font-bold uppercase tracking-wider mb-1">Weekly Challenge</p>
+              <h3 className="text-lg font-bold text-white mb-1">Play 3 different games this week</h3>
+              <p className="text-[#8899AA] text-sm mb-3">Earn 100 bonus credits for completing this challenge</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#e6ff00] rounded-full transition-all duration-500" style={{ width: `${Math.min(100, (gamesPlayed.length / 3) * 100)}%` }} />
+                </div>
+                <span className="text-sm font-bold text-white">{Math.min(gamesPlayed.length, 3)}/3</span>
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Friends Playing & Your Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Friends Playing Now */}
+        <div>
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-[#6CABDD]" /> Friends Playing
+          </h2>
+          <GlassCard>
+            <div className="space-y-3">
+              {[
+                { name: 'Alex M.', game: 'EA Sports FC 26', platform: 'PS5', status: 'online' },
+                { name: 'Jordan K.', game: 'Roblox — Blue Moon', platform: 'PC', status: 'online' },
+                { name: 'Sam T.', game: 'Football League 2026', platform: 'Mobile', status: 'away' },
+              ].map((friend, i) => (
+                <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6CABDD]/30 to-[#1C2C5B]/80 flex items-center justify-center text-xs font-bold text-white">
+                    {friend.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{friend.name}</p>
+                    <p className="text-xs text-[#8899AA] truncate">{friend.game} — {friend.platform}</p>
+                  </div>
+                  <div className={`w-2 h-2 rounded-full ${friend.status === 'online' ? 'bg-[#e6ff00]' : 'bg-[#D4A843]'}`} />
+                </div>
+              ))}
+            </div>
+            <p className="text-[#6CABDD] text-xs mt-3 cursor-pointer hover:underline">Invite friends to earn 50 credits each</p>
+          </GlassCard>
+        </div>
+
+        {/* Your Stats */}
+        <div>
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-[#D4A843]" /> Your Stats
+          </h2>
+          <GlassCard>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { label: 'Games Played', value: gamesPlayed.length, icon: Gamepad2 },
+                { label: 'Accounts Linked', value: connectedGames.length, icon: Link2 },
+                { label: 'Credits from Games', value: gamesPlayed.reduce((sum, g) => sum + (GAMES.find(x => x.name === g.name)?.credits || 30), 0), icon: Trophy },
+                { label: 'This Week', value: `${Math.min(gamesPlayed.length, 7)} sessions`, icon: Target },
+              ].map((stat, i) => (
+                <div key={i} className="bg-white/5 rounded-xl p-3 text-center">
+                  <stat.icon className="w-4 h-4 text-[#6CABDD] mx-auto mb-1.5" />
+                  <p className="text-lg font-bold text-white">{stat.value}</p>
+                  <p className="text-[10px] text-[#8899AA] uppercase tracking-wider">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
+        </div>
       </div>
       </div>
     </div>

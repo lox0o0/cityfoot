@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Gamepad2, TrendingUp, Gift, ChevronRight, Trophy, Ticket, Shirt, MapPin, Users, Tag, Pen } from 'lucide-react'
+import { Gamepad2, TrendingUp, Gift, ChevronRight, Trophy, Ticket, Shirt, MapPin, Users, Tag, Pen, Star } from 'lucide-react'
 import McCrest from '../components/McCrest'
 import TopLeftCrest from '../components/TopLeftCrest'
 
@@ -82,6 +82,7 @@ function LandingIntro({ onEnter }) {
 }
 
 export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFinished }) {
+  const [demoStarted, setDemoStarted] = useState(false)
   const [phase, setPhase] = useState(skipIntro ? 'home' : 'intro')
   const [prizeIndex, setPrizeIndex] = useState(0)
   const [currentVideo, setCurrentVideo] = useState(0)
@@ -99,7 +100,11 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
     if (!video) return
 
     const handleEnded = () => {
-      setCurrentVideo(prev => (prev + 1) % HERO_VIDEOS.length)
+      setCurrentVideo(prev => {
+        if (prev === 0) return 1  // After first video, go to vid2
+        const next = prev + 1
+        return next >= HERO_VIDEOS.length ? 1 : next  // Cycle 1-4, skip 0
+      })
     }
 
     video.addEventListener('ended', handleEnded)
@@ -118,12 +123,23 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
     onIntroFinished?.()
   }
 
+  if (!demoStarted) {
+    return (
+      <div className="min-h-screen bg-[#0A0E17] flex items-end p-8">
+        <button onClick={() => setDemoStarted(true)} className="flex flex-col items-center gap-2 group">
+          <Star className="w-10 h-10 text-[#6CABDD] animate-pulse group-hover:text-[#e6ff00] transition-colors" fill="currentColor" />
+          <span className="text-xs text-[#8899AA] group-hover:text-white transition-colors uppercase tracking-wider">Start Demo</span>
+        </button>
+      </div>
+    )
+  }
+
   if (phase === 'intro') {
     return <LandingIntro onEnter={finishIntro} />
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0E17] overflow-y-auto">
+    <div className="min-h-screen bg-[#0A0E17] overflow-y-auto" style={{ animation: 'slide-in 0.8s ease-out' }}>
       <TopLeftCrest />
       {/* Hero — cycling highlight videos behind content */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -227,7 +243,7 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="bg-white/5 backdrop-blur-xl border border-white/15 rounded-2xl p-8">
           <p className="text-center text-[#6CABDD] font-medium mb-6">
-            Join 50,000+ Man City fans already earning
+            Join 50,000+ Man City fans already getting closer to the game
           </p>
           <div className="grid grid-cols-3 gap-6 text-center">
             <div>

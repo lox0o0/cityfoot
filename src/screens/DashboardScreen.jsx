@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Flame, Star, Gamepad2, Share2, UserPlus, UserCheck, Shirt, Plane, Beer } from 'lucide-react'
+import { Flame, Star, Gamepad2, Share2, UserPlus, UserCheck, Shirt, Plane, Beer, Gift, Trophy } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
 import TierBadge from '../components/TierBadge'
 import ProgressBar from '../components/ProgressBar'
@@ -57,7 +57,7 @@ function SponsorBrand({ logoSrc, altText, Icon }) {
     <img
       src={logoSrc}
       alt={altText || ''}
-      className="h-8 object-contain mb-3 opacity-90"
+      className="h-8 object-contain mb-3 opacity-90 mix-blend-lighten"
       onError={() => setFailed(true)}
     />
   )
@@ -240,6 +240,29 @@ export default function DashboardScreen({
               </div>
             </GlassCard>
           ))}
+        </div>
+      </div>
+
+      {/* Spend Your Credits */}
+      <div>
+        <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4">Spend Your Credits</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
+            <Gift className="w-6 h-6 text-[#6CABDD] mb-2" />
+            <h4 className="text-sm font-bold text-white">Digital Wallpaper Pack</h4>
+            <p className="text-[#D4A843] text-sm font-bold mt-1">50 credits</p>
+          </GlassCard>
+          <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
+            <Shirt className="w-6 h-6 text-[#6CABDD] mb-2" />
+            <h4 className="text-sm font-bold text-white">Puma Voucher £10 Off</h4>
+            <p className="text-[#D4A843] text-sm font-bold mt-1">100 credits</p>
+          </GlassCard>
+          <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
+            <Trophy className="w-6 h-6 text-[#D4A843] mb-2" />
+            <h4 className="text-sm font-bold text-white">Signed Jersey</h4>
+            <p className="text-[#D4A843] text-sm font-bold mt-1">2,000 credits</p>
+            <p className="text-[#8899AA] text-xs mt-0.5">Requires Centurion</p>
+          </GlassCard>
         </div>
       </div>
 

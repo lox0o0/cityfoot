@@ -7,6 +7,7 @@ export const GAMES = [
     platforms: ['PS5', 'Xbox', 'PC', 'Mobile'],
     description: 'Play as Man City in the world\'s biggest football game',
     credits: 50,
+    connectCredits: 30,
     badge: 'MOST POPULAR',
     badgeColor: '#D4A843',
   },
@@ -17,6 +18,7 @@ export const GAMES = [
     platforms: ['PC', 'Mobile'],
     description: 'Free-to-play football experience with Man City content',
     credits: 30,
+    connectCredits: 20,
     badge: null,
   },
   {
@@ -26,6 +28,7 @@ export const GAMES = [
     platforms: ['PC', 'Mobile', 'Xbox'],
     description: 'Explore Man City\'s official Roblox world',
     credits: 30,
+    connectCredits: 20,
     badge: null,
   },
   {
@@ -35,6 +38,7 @@ export const GAMES = [
     platforms: ['Mobile'],
     description: 'Build your ultimate Man City squad on mobile',
     credits: 30,
+    connectCredits: 20,
     badge: 'NEW',
   },
   {
@@ -44,6 +48,7 @@ export const GAMES = [
     platforms: ['PS5', 'Xbox', 'PC', 'Switch'],
     description: 'Man City characters in the Funko universe',
     credits: 30,
+    connectCredits: 20,
     badge: 'NEW',
   },
 ]
