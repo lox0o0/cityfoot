@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { Gamepad2, X, Monitor, Smartphone, Link2, Users, Target, Trophy, Zap, Share2, Heart, Clock, BarChart3, ChevronRight } from 'lucide-react'
+import { Gamepad2, X, Monitor, Smartphone, Link2, Users, Target, Trophy, Zap, Share2, Heart, Clock, BarChart3, ChevronRight, Eye, Wifi } from 'lucide-react'
 import { GAMES } from '../data/games'
 import GlassCard from '../components/GlassCard'
 import CreditAward from '../components/CreditAward'
@@ -15,6 +15,77 @@ function PlatformFallbackIcon({ platform }) {
   if (platform === 'Mobile') return <Smartphone className="w-4 h-4 text-white/60 group-hover:text-[#6CABDD]" />
   if (platform === 'Switch') return <Gamepad2 className="w-4 h-4 text-white/60 group-hover:text-[#6CABDD]" />
   return <span className="text-[10px] text-white/60 group-hover:text-[#6CABDD]">{platform}</span>
+}
+
+/** Gaming platforms — one connection gives data across multiple games. */
+const GAMING_PLATFORMS = [
+  {
+    id: 'discord',
+    name: 'Discord',
+    icon: '/assets/shared/icons/discord.png',
+    credits: 30,
+    description: 'See what games you play and for how long via Rich Presence',
+    dataPoints: ['Games currently playing', 'Session duration', 'Play frequency'],
+    connectedUsername: 'CityFan#1234',
+    priority: true,
+  },
+  {
+    id: 'steam',
+    name: 'Steam',
+    icon: null,
+    lucideIcon: Monitor,
+    credits: 25,
+    description: 'Games owned, total playtime per game',
+    dataPoints: ['Games library', 'Playtime per game', 'Achievement progress'],
+    connectedUsername: 'CityFan_MCR',
+  },
+  {
+    id: 'xbox',
+    name: 'Xbox Live',
+    icon: '/assets/shared/icons/xbox.png',
+    credits: 25,
+    description: 'Gamertag, games played, achievements',
+    dataPoints: ['Gamerscore', 'Games played', 'Activity feed'],
+    connectedUsername: 'SkyBlue MCR',
+  },
+  {
+    id: 'psn',
+    name: 'PlayStation Network',
+    icon: '/assets/shared/icons/ps5.jpg',
+    credits: 25,
+    description: 'Recently played games, trophies earned',
+    dataPoints: ['Recent games', 'Trophy collection', 'Play sessions'],
+    connectedUsername: 'CityFan_93',
+  },
+  {
+    id: 'epic',
+    name: 'Epic Games',
+    icon: null,
+    lucideIcon: Gamepad2,
+    credits: 20,
+    description: 'Epic ID for Fortnite and Rocket League data',
+    dataPoints: ['Epic ID', 'Linked games', 'Cross-platform identity'],
+    connectedUsername: 'CityFan',
+  },
+  {
+    id: 'roblox',
+    name: 'Roblox',
+    icon: null,
+    lucideIcon: Gamepad2,
+    credits: 20,
+    description: 'Experiences visited, badges, Blue Moon engagement',
+    dataPoints: ['Experiences visited', 'Badges earned', 'Inventory items'],
+    connectedUsername: 'CityFan_Roblox',
+  },
+]
+
+/** Enriched data shown on game tiles after platform connections */
+const ENRICHED_GAME_DATA = {
+  'ea-fc-26': { stat: '47 matches played', source: 'via Xbox Live', hours: '38h total' },
+  'fc-online': { stat: '12 sessions', source: 'via Steam', hours: '8h total' },
+  'roblox': { stat: 'Blue Moon badge earned', source: 'via Roblox', hours: '6h total' },
+  'fl-26': { stat: null, source: null, hours: null },
+  'funko-fusion': { stat: '3 chapters completed', source: 'via Steam', hours: '5h total' },
 }
 
 const GAMING_SURVEY_QUESTIONS = [
@@ -46,7 +117,7 @@ const GAMING_SURVEY_QUESTIONS = [
 
 const ACHIEVEMENTS = [
   { name: 'First Game', desc: 'Play your first Man City game', icon: Gamepad2, unlocked: true },
-  { name: 'Connector', desc: 'Link 3 game accounts', icon: Link2, unlocked: false, progress: '1/3' },
+  { name: 'Connector', desc: 'Link 3 platform accounts', icon: Link2, unlocked: false, progress: '0/3' },
   { name: 'Social Star', desc: 'Share a gaming moment on social', icon: Share2, unlocked: false },
   { name: 'Marathon Gamer', desc: 'Play 10 sessions in a week', icon: Clock, unlocked: false, progress: '3/10' },
   { name: 'Challenge Champion', desc: 'Complete 5 weekly challenges', icon: Trophy, unlocked: false, progress: '1/5' },
@@ -69,27 +140,29 @@ export default function GamesHubScreen({
   const [showCredit, setShowCredit] = useState(false)
   const [creditAmount, setCreditAmount] = useState(0)
   const [launchPlatform, setLaunchPlatform] = useState(null)
-  const [connectedGames, setConnectedGames] = useState([])
+  const [connectedPlatforms, setConnectedPlatforms] = useState([])
   const [surveyStep, setSurveyStep] = useState(0)
   const [surveyDone, setSurveyDone] = useState(false)
   const [surveyAnswers, setSurveyAnswers] = useState({})
   const [showSurvey, setShowSurvey] = useState(false)
   const [sharedMoments, setSharedMoments] = useState(0)
+  const [expandedPlatform, setExpandedPlatform] = useState(null)
 
-  const handleConnectGame = useCallback((game) => {
-    if (connectedGames.includes(game.id)) return
-    setConnectedGames(g => [...g, game.id])
-    const credits = game.connectCredits || 20
-    setCreditBalance(b => b + credits)
+  const hasEnrichedData = connectedPlatforms.length > 0
+
+  const handleConnectPlatform = useCallback((platform) => {
+    if (connectedPlatforms.includes(platform.id)) return
+    setConnectedPlatforms(p => [...p, platform.id])
+    setCreditBalance(b => b + platform.credits)
     setTotalCreditsEarned(t => {
-      const newTotal = t + credits
+      const newTotal = t + platform.credits
       onTierUp(t, newTotal)
       return newTotal
     })
-    setCreditAmount(credits)
+    setCreditAmount(platform.credits)
     setShowCredit(true)
     setTimeout(() => setShowCredit(false), 1500)
-  }, [connectedGames, onTierUp, setCreditBalance, setTotalCreditsEarned])
+  }, [connectedPlatforms, onTierUp, setCreditBalance, setTotalCreditsEarned])
 
   const handlePlatformSelect = useCallback(
     (game, platform) => {
@@ -149,6 +222,14 @@ export default function GamesHubScreen({
     setTimeout(() => setShowCredit(false), 1500)
   }
 
+  function PlatformIcon({ platform, className }) {
+    if (platform.icon) {
+      return <img src={platform.icon} alt={platform.name} className={`${className} object-contain`} />
+    }
+    const Icon = platform.lucideIcon || Gamepad2
+    return <Icon className={`${className} text-[#6CABDD]`} />
+  }
+
   return (
     <div className="relative min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/assets/leaderboard/backgrounds/stadium.jpeg')" }} />
@@ -161,7 +242,7 @@ export default function GamesHubScreen({
         onDone={() => setShowCredit(false)}
       />
 
-      {/* Connect Platform Modal */}
+      {/* Connect Platform Modal (for playing games) */}
       {connectingGame && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="bg-[#0A0E17] border border-white/15 rounded-2xl p-8 max-w-sm w-full mx-4">
@@ -172,7 +253,7 @@ export default function GamesHubScreen({
               </button>
             </div>
             <img src={connectingGame.image} alt={connectingGame.name} className="w-full h-32 object-cover rounded-xl mb-4" />
-            <p className="text-[#8899AA] text-sm mb-4">Select your platform to connect and start earning credits</p>
+            <p className="text-[#8899AA] text-sm mb-4">Select your platform to launch and start earning credits</p>
             <div className="space-y-2">
               {connectingGame.platforms.map(p => {
                 const iconSrc = PLATFORM_ICONS[p]
@@ -190,7 +271,7 @@ export default function GamesHubScreen({
                       )}
                     </div>
                     <span className="text-white font-medium">{p}</span>
-                    <span className="ml-auto text-[#8899AA] text-sm">Connect</span>
+                    <span className="ml-auto text-[#8899AA] text-sm">Launch</span>
                   </button>
                 )
               })}
@@ -261,12 +342,132 @@ export default function GamesHubScreen({
         document.body
       )}
 
+      {/* Platform Detail Drawer */}
+      {expandedPlatform && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#0A0E17] border border-white/15 rounded-2xl p-8 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <PlatformIcon platform={expandedPlatform} className="w-6 h-6" />
+                <h3 className="text-xl font-bold uppercase text-white">{expandedPlatform.name}</h3>
+              </div>
+              <button onClick={() => setExpandedPlatform(null)} className="text-white/50 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-[#8899AA] text-sm mb-4">{expandedPlatform.description}</p>
+
+            <div className="mb-4">
+              <p className="text-[#6CABDD] text-xs font-bold uppercase tracking-wider mb-2">Data We Can Access</p>
+              <div className="space-y-2">
+                {expandedPlatform.dataPoints.map((dp, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm">
+                    <Eye className="w-3.5 h-3.5 text-[#6CABDD] shrink-0" />
+                    <span className="text-white/80">{dp}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {connectedPlatforms.includes(expandedPlatform.id) ? (
+              <div className="bg-[#22C55E]/10 border border-[#22C55E]/20 rounded-xl p-4 text-center">
+                <p className="text-[#22C55E] font-bold">Connected as {expandedPlatform.connectedUsername}</p>
+                <p className="text-[#8899AA] text-xs mt-1">Passively tracking gaming activity</p>
+              </div>
+            ) : (
+              <button
+                onClick={() => { handleConnectPlatform(expandedPlatform); setExpandedPlatform(null) }}
+                className="w-full bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-3 rounded-xl text-sm transition-all hover:scale-[1.02]"
+              >
+                Connect {expandedPlatform.name} (+{expandedPlatform.credits} credits)
+              </button>
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <Gamepad2 className="w-6 h-6 text-[#6CABDD]" />
         <h1 className="text-4xl font-extrabold uppercase tracking-tight text-white">PLAY</h1>
       </div>
-      <p className="text-[#8899AA] mb-8">Launch any Man City game and earn City Credits</p>
+      <p className="text-[#8899AA] mb-6">Launch any Man City game and earn City Credits</p>
+
+      {/* ========== CONNECT YOUR PLATFORMS — Hero Section ========== */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <Wifi className="w-5 h-5 text-[#6CABDD]" /> Connect Your Platforms
+          </h2>
+          <span className="text-xs text-[#8899AA]">{connectedPlatforms.length}/{GAMING_PLATFORMS.length} connected</span>
+        </div>
+
+        <p className="text-[#8899AA] text-sm mb-4">
+          One platform connection gives us visibility across multiple games — no publisher integration needed.
+        </p>
+
+        {/* Discord — Featured / Priority */}
+        {!connectedPlatforms.includes('discord') && (
+          <GlassCard className="!border-[#5865F2]/40 bg-[#5865F2]/5 mb-4 cursor-pointer hover:bg-[#5865F2]/10 transition-all" onClick={() => setExpandedPlatform(GAMING_PLATFORMS[0])}>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[#5865F2]/20 flex items-center justify-center shrink-0">
+                <img src="/assets/shared/icons/discord.png" alt="Discord" className="w-7 h-7 object-contain" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-white font-bold">Discord</h3>
+                  <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#5865F2] text-white">Recommended</span>
+                </div>
+                <p className="text-[#8899AA] text-sm">Rich Presence shows what games you play and for how long — passively, across every game</p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="text-[#D4A843] font-bold text-sm">+30</span>
+                <ChevronRight className="w-4 h-4 text-[#8899AA] mt-1 ml-auto" />
+              </div>
+            </div>
+          </GlassCard>
+        )}
+
+        {/* Platform Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {GAMING_PLATFORMS.filter(p => connectedPlatforms.includes('discord') ? true : p.id !== 'discord').map(platform => {
+            const isConnected = connectedPlatforms.includes(platform.id)
+            return (
+              <div
+                key={platform.id}
+                onClick={() => isConnected ? null : setExpandedPlatform(platform)}
+                className={`bg-white/5 backdrop-blur-xl border rounded-xl p-4 transition-all ${
+                  isConnected
+                    ? 'border-[#22C55E]/30 bg-[#22C55E]/5'
+                    : 'border-white/10 cursor-pointer hover:border-[#6CABDD]/40 hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                    <PlatformIcon platform={platform} className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-white truncate">{platform.name}</p>
+                  </div>
+                </div>
+                {isConnected ? (
+                  <div>
+                    <p className="text-[#22C55E] text-xs font-medium">{platform.connectedUsername}</p>
+                    <p className="text-[#8899AA] text-[10px] mt-0.5">Tracking active</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#8899AA] text-xs">Connect</span>
+                    <span className="text-[#D4A843] text-xs font-bold">+{platform.credits}</span>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
       {/* Gaming Profile Survey CTA */}
       {!surveyDone && (
@@ -287,9 +488,11 @@ export default function GamesHubScreen({
         </GlassCard>
       )}
 
-      {/* Game Grid */}
+      {/* ========== GAME GRID ========== */}
+      <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4">Man City Games</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {GAMES.map(game => {
+          const enriched = hasEnrichedData ? ENRICHED_GAME_DATA[game.id] : null
           return (
             <GlassCard key={game.id} className="hover:bg-white/10 hover:translate-y-[-2px] transition-all duration-300 flex flex-col">
               <div className="rounded-xl mb-4 relative overflow-hidden h-[180px]">
@@ -329,32 +532,31 @@ export default function GamesHubScreen({
                 })}
               </div>
 
-              <p className="text-sm text-[#8899AA] mb-4 flex-1">{game.description}</p>
+              <p className="text-sm text-[#8899AA] mb-3 flex-1">{game.description}</p>
+
+              {/* Enriched data from platform connections */}
+              {enriched && enriched.stat && (
+                <div className="bg-[#6CABDD]/10 border border-[#6CABDD]/20 rounded-lg px-3 py-2 mb-3" style={{ animation: 'slide-in 0.4s ease-out' }}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Eye className="w-3 h-3 text-[#6CABDD]" />
+                      <span className="text-[#6CABDD] text-xs font-medium">{enriched.stat}</span>
+                    </div>
+                    <span className="text-[#8899AA] text-[10px]">{enriched.hours}</span>
+                  </div>
+                  <p className="text-[#8899AA] text-[10px] mt-0.5">{enriched.source}</p>
+                </div>
+              )}
 
               <div className="flex items-center justify-between">
                 <span className="text-[#D4A843] font-bold text-sm">+{game.credits} credits</span>
-                <div className="flex gap-2">
-                  {!connectedGames.includes(game.id) ? (
-                    <button
-                      onClick={() => handleConnectGame(game)}
-                      className="border border-[#6CABDD]/50 text-[#6CABDD] hover:bg-[#6CABDD]/10 font-bold py-2 px-3 rounded-xl text-sm transition-all flex items-center gap-1.5"
-                    >
-                      <Link2 className="w-3.5 h-3.5" />
-                      Connect
-                    </button>
-                  ) : (
-                    <span className="text-[#6CABDD] text-xs font-medium flex items-center gap-1 px-3 py-2">
-                      <Link2 className="w-3.5 h-3.5" /> Linked
-                    </span>
-                  )}
-                  <button
-                    onClick={() => setConnectingGame(game)}
-                    disabled={!!launchingGame}
-                    className="bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-2 px-5 rounded-xl text-sm transition-all hover:scale-[1.02] disabled:opacity-50"
-                  >
-                    Play Now
-                  </button>
-                </div>
+                <button
+                  onClick={() => setConnectingGame(game)}
+                  disabled={!!launchingGame}
+                  className="bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-2 px-5 rounded-xl text-sm transition-all hover:scale-[1.02] disabled:opacity-50"
+                >
+                  Play Now
+                </button>
               </div>
             </GlassCard>
           )
@@ -442,9 +644,9 @@ export default function GamesHubScreen({
           <GlassCard>
             <div className="space-y-3">
               {[
-                { name: 'Alex M.', game: 'EA Sports FC 26', platform: 'PS5', status: 'online' },
-                { name: 'Jordan K.', game: 'Roblox — Blue Moon', platform: 'PC', status: 'online' },
-                { name: 'Sam T.', game: 'Football League 2026', platform: 'Mobile', status: 'away' },
+                { name: 'Alex M.', game: 'EA Sports FC 26', platform: 'PS5', status: 'online', source: 'Discord Rich Presence' },
+                { name: 'Jordan K.', game: 'Roblox — Blue Moon', platform: 'PC', status: 'online', source: 'Discord Rich Presence' },
+                { name: 'Sam T.', game: 'Football League 2026', platform: 'Mobile', status: 'away', source: 'Last seen 2h ago' },
               ].map((friend, i) => (
                 <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6CABDD]/30 to-[#1C2C5B]/80 flex items-center justify-center text-xs font-bold text-white">
@@ -453,6 +655,7 @@ export default function GamesHubScreen({
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">{friend.name}</p>
                     <p className="text-xs text-[#8899AA] truncate">{friend.game} — {friend.platform}</p>
+                    <p className="text-[10px] text-[#6CABDD]/60">{friend.source}</p>
                   </div>
                   <div className={`w-2 h-2 rounded-full ${friend.status === 'online' ? 'bg-[#e6ff00]' : 'bg-[#D4A843]'}`} />
                 </div>
@@ -471,7 +674,7 @@ export default function GamesHubScreen({
             <div className="grid grid-cols-2 gap-4">
               {[
                 { label: 'Games Played', value: gamesPlayed.length, icon: Gamepad2 },
-                { label: 'Accounts Linked', value: connectedGames.length, icon: Link2 },
+                { label: 'Platforms Linked', value: connectedPlatforms.length, icon: Link2 },
                 { label: 'Credits from Games', value: gamesPlayed.reduce((sum, g) => sum + (GAMES.find(x => x.name === g.name)?.credits || 30), 0), icon: Trophy },
                 { label: 'This Week', value: `${Math.min(gamesPlayed.length, 7)} sessions`, icon: Target },
               ].map((stat, i) => (
