@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Flame, Star, Gamepad2, Share2, UserPlus, UserCheck, Shirt, Plane, Beer, Gift, Trophy } from 'lucide-react'
+import { Flame, Star, Gamepad2, Share2, UserPlus, UserCheck, Shirt, Plane, Beer, Gift, Trophy, Zap, CalendarCheck, MessageCircle, Bell } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
 import TierBadge from '../components/TierBadge'
 import ProgressBar from '../components/ProgressBar'
@@ -46,6 +46,20 @@ const SPONSORS = [
     cta: 'Get Offer',
     note: 'Must be 18+ to claim',
   },
+]
+
+const COMMUNITY_FEED = [
+  { user: 'BlueMoonRising', action: 'reached Legend tier', time: '2m ago' },
+  { user: 'CityTilIDie', action: 'claimed Signed Jersey', time: '5m ago' },
+  { user: 'HaalandFan9', action: 'played EA Sports FC 26', time: '12m ago' },
+  { user: 'FodenIsKing', action: 'won 200 credits on Daily Spin', time: '18m ago' },
+  { user: 'SkyBlue_MCR', action: 'completed Weekly Challenge', time: '25m ago' },
+]
+
+const NOTIFICATIONS = [
+  { text: 'New Kit Room Drop: Haaland Hat-Trick Badge', type: 'drop', time: '1h ago' },
+  { text: 'You\'re 50 credits from Matchday tier', type: 'tier', time: '3h ago' },
+  { text: 'Weekly Challenge resets in 2 days', type: 'challenge', time: '6h ago' },
 ]
 
 function SponsorBrand({ logoSrc, altText, Icon }) {
@@ -96,6 +110,8 @@ export default function DashboardScreen({
 }) {
   const tier = getTierForCredits(totalCreditsEarned)
   const nextTier = getNextTier(totalCreditsEarned)
+  const [dailyCheckedIn, setDailyCheckedIn] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
 
   const videoRef = useRef(null)
   const [currentVideo, setCurrentVideo] = useState(0)
@@ -171,43 +187,104 @@ export default function DashboardScreen({
     <div className="relative min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="fixed inset-0 w-full h-full object-cover z-0"
         autoPlay muted playsInline
         src={DASH_VIDEOS[0]}
       />
-      <div className="absolute inset-0 bg-[#0A0E17]/80" />
+      <div className="fixed inset-0 bg-[#0A0E17]/75 z-0" />
       <div className="relative z-10 p-6 space-y-6">
+
+      {/* Notification Bell */}
+      <div className="flex justify-end mb-[-12px]">
+        <button
+          onClick={() => setShowNotifications(!showNotifications)}
+          className="relative p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-all"
+        >
+          <Bell className="w-5 h-5 text-[#8899AA]" />
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#e6ff00] rounded-full" />
+        </button>
+      </div>
+
+      {/* Notification Dropdown */}
+      {showNotifications && (
+        <div className="bg-[#0A0E17]/90 backdrop-blur-xl border border-white/15 rounded-2xl p-4 space-y-2" style={{ animation: 'slide-in 0.3s ease-out' }}>
+          <p className="text-xs font-bold text-[#8899AA] uppercase tracking-wider mb-2">Notifications</p>
+          {NOTIFICATIONS.map((n, i) => (
+            <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all">
+              <div className={`w-2 h-2 rounded-full shrink-0 ${
+                n.type === 'drop' ? 'bg-[#D4A843]' : n.type === 'tier' ? 'bg-[#6CABDD]' : 'bg-[#e6ff00]'
+              }`} />
+              <p className="text-sm text-white flex-1">{n.text}</p>
+              <span className="text-xs text-[#8899AA]">{n.time}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Hero Carousel */}
       <Carousel slides={carouselSlides} />
 
-      {/* XP / Tier Section */}
-      <GlassCard>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-[#8899AA] text-xs uppercase tracking-wider mb-1">Current Tier</p>
-            <TierBadge tierName={tier.name} size="lg" />
+      {/* Daily Check-In + XP row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Daily Check-In */}
+        <GlassCard className="lg:col-span-1">
+          <div className="flex items-center gap-2 mb-3">
+            <CalendarCheck className="w-5 h-5 text-[#e6ff00]" />
+            <p className="text-sm font-bold text-white uppercase tracking-wider">Daily Check-In</p>
           </div>
-          <div className="text-right">
-            <p className="text-[#8899AA] text-xs uppercase tracking-wider mb-1">City Credits</p>
-            <p className="text-5xl font-extrabold bg-gradient-to-r from-[#6CABDD] to-[#D4A843] bg-clip-text text-transparent">
-              {creditBalance.toLocaleString()}
-            </p>
-          </div>
-        </div>
-
-        {nextTier && (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <TierBadge tierName={tier.name} />
-              <span className="text-xs text-[#8899AA]">
-                {totalCreditsEarned.toLocaleString()} / {nextTier.threshold.toLocaleString()} credits
-              </span>
-              <TierBadge tierName={nextTier.name} />
+          {dailyCheckedIn ? (
+            <div className="text-center py-2">
+              <p className="text-[#e6ff00] font-bold">+15 credits earned</p>
+              <p className="text-[#8899AA] text-xs mt-1">Come back tomorrow</p>
             </div>
-            <ProgressBar current={totalCreditsEarned - tier.threshold} max={nextTier.threshold - tier.threshold} />
+          ) : (
+            <button
+              onClick={() => setDailyCheckedIn(true)}
+              className="w-full bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-3 rounded-xl text-sm transition-all hover:scale-[1.02]"
+            >
+              Check In (+15 credits)
+            </button>
+          )}
+          <div className="flex gap-1 mt-3">
+            {[1, 2, 3, 4, 5, 6, 7].map(d => (
+              <div
+                key={d}
+                className={`flex-1 h-1.5 rounded-full ${d <= 3 ? 'bg-[#e6ff00]' : 'bg-white/10'}`}
+              />
+            ))}
           </div>
-        )}
-      </GlassCard>
+          <p className="text-[#8899AA] text-xs mt-1">Day 3/7 — 7-day streak bonus: +100 credits</p>
+        </GlassCard>
+
+        {/* XP / Tier Section */}
+        <GlassCard className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-[#8899AA] text-xs uppercase tracking-wider mb-1">Current Tier</p>
+              <TierBadge tierName={tier.name} size="lg" />
+            </div>
+            <div className="text-right">
+              <p className="text-[#8899AA] text-xs uppercase tracking-wider mb-1">City Credits</p>
+              <p className="text-5xl font-extrabold bg-gradient-to-r from-[#6CABDD] to-[#D4A843] bg-clip-text text-transparent">
+                {creditBalance.toLocaleString()}
+              </p>
+            </div>
+          </div>
+
+          {nextTier && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <TierBadge tierName={tier.name} />
+                <span className="text-xs text-[#8899AA]">
+                  {totalCreditsEarned.toLocaleString()} / {nextTier.threshold.toLocaleString()} credits
+                </span>
+                <TierBadge tierName={nextTier.name} />
+              </div>
+              <ProgressBar current={totalCreditsEarned - tier.threshold} max={nextTier.threshold - tier.threshold} />
+            </div>
+          )}
+        </GlassCard>
+      </div>
 
       {/* Weekly Activities */}
       <div>
@@ -243,25 +320,48 @@ export default function DashboardScreen({
         </div>
       </div>
 
-      {/* Spend Your Credits */}
-      <div>
-        <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4">Spend Your Credits</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
-            <Gift className="w-6 h-6 text-[#6CABDD] mb-2" />
-            <h4 className="text-sm font-bold text-white">Digital Wallpaper Pack</h4>
-            <p className="text-[#D4A843] text-sm font-bold mt-1">50 credits</p>
-          </GlassCard>
-          <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
-            <Shirt className="w-6 h-6 text-[#6CABDD] mb-2" />
-            <h4 className="text-sm font-bold text-white">Puma Voucher £10 Off</h4>
-            <p className="text-[#D4A843] text-sm font-bold mt-1">100 credits</p>
-          </GlassCard>
-          <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
-            <Trophy className="w-6 h-6 text-[#D4A843] mb-2" />
-            <h4 className="text-sm font-bold text-white">Signed Jersey</h4>
-            <p className="text-[#D4A843] text-sm font-bold mt-1">2,000 credits</p>
-            <p className="text-[#8899AA] text-xs mt-0.5">Requires Centurion</p>
+      {/* Spend Your Credits + Community Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Spend Your Credits */}
+        <div className="lg:col-span-2">
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4">Spend Your Credits</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
+              <Gift className="w-6 h-6 text-[#6CABDD] mb-2" />
+              <h4 className="text-sm font-bold text-white">Digital Wallpaper Pack</h4>
+              <p className="text-[#D4A843] text-sm font-bold mt-1">50 credits</p>
+            </GlassCard>
+            <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
+              <Shirt className="w-6 h-6 text-[#6CABDD] mb-2" />
+              <h4 className="text-sm font-bold text-white">Puma Voucher £10 Off</h4>
+              <p className="text-[#D4A843] text-sm font-bold mt-1">100 credits</p>
+            </GlassCard>
+            <GlassCard className="cursor-pointer hover:border-[#e6ff00]/30" onClick={() => onNavigate('rewards')}>
+              <Trophy className="w-6 h-6 text-[#D4A843] mb-2" />
+              <h4 className="text-sm font-bold text-white">Signed Jersey</h4>
+              <p className="text-[#D4A843] text-sm font-bold mt-1">2,000 credits</p>
+              <p className="text-[#8899AA] text-xs mt-0.5">Requires Centurion</p>
+            </GlassCard>
+          </div>
+        </div>
+
+        {/* Community Feed */}
+        <div>
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-[#6CABDD]" /> Live
+          </h2>
+          <GlassCard className="!p-0 overflow-hidden">
+            <div className="divide-y divide-white/5">
+              {COMMUNITY_FEED.map((item, i) => (
+                <div key={i} className="px-4 py-3 hover:bg-white/5 transition-all">
+                  <p className="text-sm">
+                    <span className="text-[#6CABDD] font-medium">{item.user}</span>{' '}
+                    <span className="text-white/70">{item.action}</span>
+                  </p>
+                  <p className="text-[10px] text-[#8899AA] mt-0.5">{item.time}</p>
+                </div>
+              ))}
+            </div>
           </GlassCard>
         </div>
       </div>

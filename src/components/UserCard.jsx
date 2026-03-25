@@ -1,3 +1,4 @@
+import { Flame } from 'lucide-react'
 import TierBadge from './TierBadge'
 import { getTierForCredits, getNextTier } from '../utils/credits'
 import { TIERS } from '../data/tiers'
@@ -17,14 +18,22 @@ const HARDCODED_ACTIVITY = [
   'Played Roblox — Blue Moon',
 ]
 
-export default function UserCard({ userName, creditBalance, totalCreditsEarned }) {
+export default function UserCard({ userName, creditBalance, totalCreditsEarned, streakWeeks }) {
   const tier = getTierForCredits(totalCreditsEarned)
   const tierMeta = TIERS.find(x => x.name === tier.name) || TIERS[0]
   const nextTier = getNextTier(totalCreditsEarned)
 
   return (
-    <div className="fixed right-0 top-0 h-full w-[280px] bg-[#0A0E17]/60 backdrop-blur-xl border-l border-white/15 p-6 z-20 overflow-y-auto">
-      <div className="flex flex-col items-center text-center mb-6 pt-4">
+    <div className="fixed right-0 top-0 h-full w-[280px] bg-[#0A0E17]/40 backdrop-blur-md border-l border-white/10 p-6 z-20 overflow-y-auto">
+      {/* Streak Indicator */}
+      {streakWeeks > 0 && (
+        <div className="flex items-center gap-2 bg-[#e6ff00]/10 border border-[#e6ff00]/20 rounded-xl px-3 py-2 mb-4">
+          <Flame className="w-4 h-4 text-[#e6ff00] animate-[pulse-glow_2s_ease-in-out_infinite]" />
+          <span className="text-sm font-bold text-[#e6ff00]">{streakWeeks} week streak</span>
+        </div>
+      )}
+
+      <div className="flex flex-col items-center text-center mb-6 pt-0">
         <div
           className="w-16 h-16 rounded-full flex items-center justify-center mb-3 text-lg font-extrabold text-white bg-gradient-to-br from-[#6CABDD]/35 to-[#1C2C5B]/90"
           style={{

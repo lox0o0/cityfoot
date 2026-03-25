@@ -106,6 +106,7 @@ export default function App() {
           <LeaderboardScreen
             userName={userName}
             totalCreditsEarned={totalCreditsEarned}
+            onNavigate={handleNavigate}
           />
         )
 
@@ -161,7 +162,7 @@ export default function App() {
 
       {/* Sidebar */}
       {showSidebar && (
-        <Sidebar currentScreen={currentScreen} onNavigate={handleNavigate} streakWeeks={streakWeeks} />
+        <Sidebar currentScreen={currentScreen} onNavigate={handleNavigate} />
       )}
 
       {/* Main Content */}
@@ -185,6 +186,7 @@ export default function App() {
           userName={userName}
           creditBalance={creditBalance}
           totalCreditsEarned={totalCreditsEarned}
+          streakWeeks={streakWeeks}
         />
       )}
     </div>

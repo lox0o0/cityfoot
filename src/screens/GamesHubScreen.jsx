@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { Gamepad2, X, Monitor, Smartphone, Link2, Users, Target, Trophy, Zap } from 'lucide-react'
+import { Gamepad2, X, Monitor, Smartphone, Link2, Users, Target, Trophy, Zap, Share2, Heart, Clock, BarChart3, ChevronRight } from 'lucide-react'
 import { GAMES } from '../data/games'
 import GlassCard from '../components/GlassCard'
 import CreditAward from '../components/CreditAward'
@@ -16,6 +16,42 @@ function PlatformFallbackIcon({ platform }) {
   if (platform === 'Switch') return <Gamepad2 className="w-4 h-4 text-white/60 group-hover:text-[#6CABDD]" />
   return <span className="text-[10px] text-white/60 group-hover:text-[#6CABDD]">{platform}</span>
 }
+
+const GAMING_SURVEY_QUESTIONS = [
+  {
+    id: 'fav-genre',
+    question: 'What\'s your favourite game genre?',
+    options: ['Sports / Football', 'Battle Royale', 'RPG / Adventure', 'Simulation', 'Puzzle / Casual'],
+    credits: 15,
+  },
+  {
+    id: 'play-time',
+    question: 'How many hours per week do you game?',
+    options: ['1-3 hours', '4-8 hours', '9-15 hours', '16+ hours'],
+    credits: 15,
+  },
+  {
+    id: 'fav-platform',
+    question: 'What\'s your primary gaming platform?',
+    options: ['PlayStation', 'Xbox', 'PC', 'Mobile', 'Nintendo Switch'],
+    credits: 15,
+  },
+  {
+    id: 'fav-player',
+    question: 'Who\'s your favourite Man City player?',
+    options: ['Haaland', 'Foden', 'De Bruyne', 'Grealish', 'Other'],
+    credits: 10,
+  },
+]
+
+const ACHIEVEMENTS = [
+  { name: 'First Game', desc: 'Play your first Man City game', icon: Gamepad2, unlocked: true },
+  { name: 'Connector', desc: 'Link 3 game accounts', icon: Link2, unlocked: false, progress: '1/3' },
+  { name: 'Social Star', desc: 'Share a gaming moment on social', icon: Share2, unlocked: false },
+  { name: 'Marathon Gamer', desc: 'Play 10 sessions in a week', icon: Clock, unlocked: false, progress: '3/10' },
+  { name: 'Challenge Champion', desc: 'Complete 5 weekly challenges', icon: Trophy, unlocked: false, progress: '1/5' },
+  { name: 'Top 100', desc: 'Reach top 100 on the leaderboard', icon: BarChart3, unlocked: false },
+]
 
 export default function GamesHubScreen({
   creditBalance,
@@ -34,6 +70,11 @@ export default function GamesHubScreen({
   const [creditAmount, setCreditAmount] = useState(0)
   const [launchPlatform, setLaunchPlatform] = useState(null)
   const [connectedGames, setConnectedGames] = useState([])
+  const [surveyStep, setSurveyStep] = useState(0)
+  const [surveyDone, setSurveyDone] = useState(false)
+  const [surveyAnswers, setSurveyAnswers] = useState({})
+  const [showSurvey, setShowSurvey] = useState(false)
+  const [sharedMoments, setSharedMoments] = useState(0)
 
   const handleConnectGame = useCallback((game) => {
     if (connectedGames.includes(game.id)) return
@@ -72,6 +113,41 @@ export default function GamesHubScreen({
     },
     [onTierUp, setCreditBalance, setGamesPlayed, setTotalCreditsEarned]
   )
+
+  function handleSurveyAnswer(questionId, answer) {
+    setSurveyAnswers(prev => ({ ...prev, [questionId]: answer }))
+    const question = GAMING_SURVEY_QUESTIONS[surveyStep]
+    setCreditBalance(b => b + question.credits)
+    setTotalCreditsEarned(t => {
+      const newTotal = t + question.credits
+      onTierUp(t, newTotal)
+      return newTotal
+    })
+    setCreditAmount(question.credits)
+    setShowCredit(true)
+    setTimeout(() => setShowCredit(false), 1500)
+
+    if (surveyStep < GAMING_SURVEY_QUESTIONS.length - 1) {
+      setSurveyStep(s => s + 1)
+    } else {
+      setSurveyDone(true)
+      setShowSurvey(false)
+    }
+  }
+
+  function handleShareMoment() {
+    setSharedMoments(s => s + 1)
+    const credits = 25
+    setCreditBalance(b => b + credits)
+    setTotalCreditsEarned(t => {
+      const newTotal = t + credits
+      onTierUp(t, newTotal)
+      return newTotal
+    })
+    setCreditAmount(credits)
+    setShowCredit(true)
+    setTimeout(() => setShowCredit(false), 1500)
+  }
 
   return (
     <div className="relative min-h-screen" style={{ animation: 'slide-in 0.4s ease-out' }}>
@@ -145,12 +221,71 @@ export default function GamesHubScreen({
         document.body
       )}
 
+      {/* Gaming Survey Modal */}
+      {showSurvey && !surveyDone && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#0A0E17] border border-white/15 rounded-2xl p-8 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold uppercase text-white">Gaming Profile</h3>
+              <button onClick={() => setShowSurvey(false)} className="text-white/50 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex gap-1 mb-4">
+              {GAMING_SURVEY_QUESTIONS.map((_, i) => (
+                <div key={i} className={`flex-1 h-1 rounded-full ${i <= surveyStep ? 'bg-[#e6ff00]' : 'bg-white/10'}`} />
+              ))}
+            </div>
+
+            <p className="text-[#8899AA] text-xs mb-1">Question {surveyStep + 1} of {GAMING_SURVEY_QUESTIONS.length}</p>
+            <p className="text-white font-bold text-lg mb-4">{GAMING_SURVEY_QUESTIONS[surveyStep].question}</p>
+
+            <div className="space-y-2">
+              {GAMING_SURVEY_QUESTIONS[surveyStep].options.map(opt => (
+                <button
+                  key={opt}
+                  onClick={() => handleSurveyAnswer(GAMING_SURVEY_QUESTIONS[surveyStep].id, opt)}
+                  className="w-full text-left p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#6CABDD]/50 hover:bg-white/10 transition-all text-white text-sm"
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+
+            <p className="text-[#D4A843] text-xs font-bold mt-4 text-center">
+              +{GAMING_SURVEY_QUESTIONS[surveyStep].credits} credits per answer
+            </p>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <Gamepad2 className="w-6 h-6 text-[#6CABDD]" />
         <h1 className="text-4xl font-extrabold uppercase tracking-tight text-white">PLAY</h1>
       </div>
       <p className="text-[#8899AA] mb-8">Launch any Man City game and earn City Credits</p>
+
+      {/* Gaming Profile Survey CTA */}
+      {!surveyDone && (
+        <GlassCard
+          className="!border-[#D4A843]/30 cursor-pointer hover:bg-white/10 transition-all mb-6"
+          onClick={() => setShowSurvey(true)}
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#D4A843]/10 flex items-center justify-center shrink-0">
+              <Heart className="w-6 h-6 text-[#D4A843]" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-white font-bold">Tell us about your gaming</h3>
+              <p className="text-[#8899AA] text-sm">Answer 4 quick questions and earn +55 credits</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-[#8899AA]" />
+          </div>
+        </GlassCard>
+      )}
 
       {/* Game Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -226,8 +361,30 @@ export default function GamesHubScreen({
         })}
       </div>
 
-      {/* Weekly Challenge */}
-      <div className="mt-10">
+      {/* Share Your Moment + Weekly Challenge */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+        {/* Share Gaming Moment */}
+        <GlassCard className="!border-[#6CABDD]/20">
+          <div className="flex items-center gap-2 mb-3">
+            <Share2 className="w-5 h-5 text-[#6CABDD]" />
+            <h3 className="text-lg font-bold text-white uppercase tracking-wider">Share a Moment</h3>
+          </div>
+          <p className="text-[#8899AA] text-sm mb-4">Share your gaming highlights on social media and earn credits every time</p>
+          <div className="flex items-center gap-3 mb-4">
+            {['/assets/shared/icons/x.png', '/assets/shared/icons/instagram.png', '/assets/shared/icons/facebook.png', '/assets/shared/icons/discord.png'].map((src, i) => (
+              <button
+                key={i}
+                onClick={handleShareMoment}
+                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:border-[#6CABDD]/50 hover:bg-white/10 flex items-center justify-center transition-all"
+              >
+                <img src={src} alt="" className="w-5 h-5 object-contain" />
+              </button>
+            ))}
+          </div>
+          <p className="text-[#D4A843] text-xs font-bold">+25 credits per share — {sharedMoments} shared today</p>
+        </GlassCard>
+
+        {/* Weekly Challenge */}
         <GlassCard className="relative overflow-hidden border-[#e6ff00]/20">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#e6ff00]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="flex items-start gap-4">
@@ -247,6 +404,32 @@ export default function GamesHubScreen({
             </div>
           </div>
         </GlassCard>
+      </div>
+
+      {/* Achievements */}
+      <div className="mt-10">
+        <h2 className="text-xl font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
+          <Trophy className="w-5 h-5 text-[#D4A843]" /> Achievements
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {ACHIEVEMENTS.map((ach, i) => (
+            <div
+              key={i}
+              className={`bg-white/5 backdrop-blur-xl border rounded-2xl p-4 text-center transition-all ${
+                ach.unlocked
+                  ? 'border-[#D4A843]/40 bg-[#D4A843]/5'
+                  : 'border-white/10 opacity-50'
+              }`}
+            >
+              <ach.icon className={`w-6 h-6 mx-auto mb-2 ${ach.unlocked ? 'text-[#D4A843]' : 'text-[#8899AA]'}`} />
+              <p className="text-xs font-bold text-white mb-0.5">{ach.name}</p>
+              <p className="text-[9px] text-[#8899AA]">{ach.desc}</p>
+              {ach.progress && !ach.unlocked && (
+                <p className="text-[10px] text-[#6CABDD] font-bold mt-1">{ach.progress}</p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Friends Playing & Your Stats */}

@@ -50,6 +50,27 @@
   100% { opacity: 1; }
 }
 
+@keyframes rare-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(108, 171, 221, 0.3), inset 0 0 8px rgba(108, 171, 221, 0.05); }
+  50% { box-shadow: 0 0 20px rgba(108, 171, 221, 0.5), inset 0 0 12px rgba(108, 171, 221, 0.1); }
+}
+
+@keyframes legendary-shimmer {
+  0% { box-shadow: 0 0 12px rgba(212, 168, 67, 0.4), inset 0 0 8px rgba(212, 168, 67, 0.05); background-position: -200% 0; }
+  50% { box-shadow: 0 0 28px rgba(212, 168, 67, 0.7), inset 0 0 16px rgba(212, 168, 67, 0.1); }
+  100% { box-shadow: 0 0 12px rgba(212, 168, 67, 0.4), inset 0 0 8px rgba(212, 168, 67, 0.05); background-position: 200% 0; }
+}
+
+@keyframes spin-wheel {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(var(--spin-degrees)); }
+}
+
+@keyframes ticker-scroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
 body {
   margin: 0;
   background: #0A0E17;

@@ -125,10 +125,10 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
 
   if (!demoStarted) {
     return (
-      <div className="min-h-screen bg-[#0A0E17] flex items-end p-8">
-        <button onClick={() => setDemoStarted(true)} className="flex flex-col items-center gap-2 group">
-          <Star className="w-10 h-10 text-[#6CABDD] animate-pulse group-hover:text-[#e6ff00] transition-colors" fill="currentColor" />
-          <span className="text-xs text-[#8899AA] group-hover:text-white transition-colors uppercase tracking-wider">Start Demo</span>
+      <div className="min-h-screen bg-[#0A0E17] flex items-end justify-end p-4">
+        <button onClick={() => setDemoStarted(true)} className="flex flex-col items-center gap-0.5 group opacity-30 hover:opacity-80 transition-opacity">
+          <Star className="w-2.5 h-2.5 text-[#6CABDD] group-hover:text-[#e6ff00] transition-colors" fill="currentColor" />
+          <span className="text-[6px] text-[#8899AA] group-hover:text-white transition-colors uppercase tracking-wider">Demo</span>
         </button>
       </div>
     )
