@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Mail, ChevronRight, Check, X as XIcon } from 'lucide-react'
+import { Mail, ChevronRight, Check, X as XIcon, Lock, Image, Tag, Pen } from 'lucide-react'
 import ProgressBar from '../components/ProgressBar'
 import CreditAward from '../components/CreditAward'
 import TopLeftCrest from '../components/TopLeftCrest'
@@ -237,9 +237,17 @@ export default function OnboardingScreen({
               <h2 className="text-2xl font-bold text-white mb-2">You're in. Let's play.</h2>
               <p className="text-[#8899AA] mb-6">Welcome to Man City Rewards</p>
 
+              {/* Glowing Credits Counter */}
               <div className="bg-white/5 rounded-xl p-4 mb-6">
                 <p className="text-[#8899AA] text-sm mb-1">Credits earned so far</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-[#6CABDD] to-[#D4A843] bg-clip-text text-transparent">
+                <p
+                  className="text-4xl font-extrabold bg-gradient-to-r from-[#6CABDD] via-[#e6ff00] to-[#D4A843] bg-clip-text text-transparent"
+                  style={{
+                    animation: 'count-pop 0.6s ease-out, pulse-glow 2s ease-in-out infinite',
+                    textShadow: '0 0 30px rgba(230, 255, 0, 0.4), 0 0 60px rgba(108, 171, 221, 0.2)',
+                    filter: 'drop-shadow(0 0 20px rgba(230, 255, 0, 0.3))',
+                  }}
+                >
                   {totalOnboardingCredits}
                 </p>
                 <div className="mt-3 space-y-1 text-sm text-left">
@@ -257,22 +265,75 @@ export default function OnboardingScreen({
                     )
                   })}
                 </div>
+              </div>
 
-                <div className="mt-4 pt-4 border-t border-white/10">
-                  <p className="text-[#6CABDD] text-sm font-semibold mb-3 uppercase tracking-wider">What you can claim right now</p>
-                  <div className="space-y-2">
-                    {[
-                      { icon: 'Image', name: 'Digital Wallpaper Pack', cost: 50 },
-                      { icon: 'Shirt', name: 'Early Access: Kit Launch', cost: 100 },
-                      { icon: 'Tag', name: 'Puma Voucher £10 Off', cost: 100 },
-                    ].map(r => (
-                      <div key={r.name} className="flex items-center justify-between bg-white/5 rounded-xl px-4 py-3">
-                        <span className="text-white text-sm">{r.name}</span>
-                        <span className="text-[#D4A843] text-sm font-bold">{r.cost} credits</span>
+              {/* Reward Tiers — "Here's what you're playing for" */}
+              <div className="mb-6">
+                <p className="text-[#e6ff00] text-sm font-bold mb-4 uppercase tracking-widest">Here's what you're playing for</p>
+
+                <div className="space-y-3">
+                  {/* Tier 1: Claimable NOW */}
+                  <div className="relative bg-white/5 border border-[#22C55E]/30 rounded-xl px-4 py-3 text-left overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-[#22C55E] text-[8px] font-bold text-white uppercase tracking-wider px-2 py-0.5 rounded-bl-lg">Claim now</div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                        <Image className="w-5 h-5 text-[#6CABDD]" />
                       </div>
-                    ))}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm font-bold">Digital Wallpaper Pack</p>
+                        <p className="text-[#8899AA] text-xs">Exclusive Haaland & squad wallpapers</p>
+                      </div>
+                      <span className="text-[#22C55E] text-sm font-bold whitespace-nowrap">50 credits</span>
+                    </div>
+                  </div>
+
+                  {/* Tier 2: Within reach ~200 credits */}
+                  <div className="relative bg-white/5 border border-[#D4A843]/20 rounded-xl px-4 py-3 text-left overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-[#D4A843] text-[8px] font-bold text-[#001838] uppercase tracking-wider px-2 py-0.5 rounded-bl-lg">Almost there</div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                        <img src="/assets/shared/sponsors/puma-white.png" alt="Puma" className="w-6 h-6 object-contain mix-blend-lighten" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm font-bold">Puma x Man City Voucher</p>
+                        <p className="text-[#8899AA] text-xs">{'\u00A3'}10 off any Puma x Man City product</p>
+                      </div>
+                      <span className="text-[#D4A843] text-sm font-bold whitespace-nowrap">200 credits</span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#D4A843] rounded-full transition-all" style={{ width: `${Math.min(100, (totalOnboardingCredits / 200) * 100)}%` }} />
+                      </div>
+                      <span className="text-[10px] text-[#D4A843] font-bold">{Math.max(0, 200 - totalOnboardingCredits)} to go</span>
+                    </div>
+                  </div>
+
+                  {/* Tier 3: The dream ~2500 credits */}
+                  <div
+                    className="relative bg-white/5 border border-[#D4A843]/10 rounded-xl px-4 py-3 text-left overflow-hidden"
+                    style={{ animation: 'legendary-shimmer 3s ease-in-out infinite' }}
+                  >
+                    <div className="absolute top-0 right-0 bg-gradient-to-r from-[#D4A843] to-[#e6ff00] text-[8px] font-bold text-[#001838] uppercase tracking-wider px-2 py-0.5 rounded-bl-lg">Legendary</div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                        <img src="/assets/shared/logos/Manchester_City_FC_badge.svg.png" alt="Man City" className="w-6 h-6 object-contain" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm font-bold">Signed Man City Jersey</p>
+                        <p className="text-[#8899AA] text-xs">Authenticated 25/26 squad signatures</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-[#D4A843] text-sm font-bold">2,500</span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Lock className="w-2.5 h-2.5 text-[#8899AA]" />
+                          <span className="text-[9px] text-[#8899AA]">Centurion Tier</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                <p className="text-[#8899AA] text-xs mt-3">Play games, connect platforms, complete challenges — credits stack fast</p>
               </div>
 
               <button

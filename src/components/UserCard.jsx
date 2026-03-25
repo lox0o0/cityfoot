@@ -24,7 +24,7 @@ export default function UserCard({ userName, creditBalance, totalCreditsEarned, 
   const nextTier = getNextTier(totalCreditsEarned)
 
   return (
-    <div className="fixed right-0 top-0 h-full w-[280px] bg-[#0A0E17]/40 backdrop-blur-md border-l border-white/10 p-6 z-20 overflow-y-auto">
+    <div className="fixed right-0 top-0 h-full w-[280px] bg-[#0A0E17]/20 backdrop-blur-sm border-l border-white/[0.06] p-6 z-20 overflow-y-auto">
       {/* Streak Indicator */}
       {streakWeeks > 0 && (
         <div className="flex items-center gap-2 bg-[#e6ff00]/10 border border-[#e6ff00]/20 rounded-xl px-3 py-2 mb-4">

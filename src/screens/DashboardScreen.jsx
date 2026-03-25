@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Flame, Star, Gamepad2, Share2, UserPlus, UserCheck, Shirt, Plane, Beer, Gift, Trophy, Zap, CalendarCheck, MessageCircle, Bell } from 'lucide-react'
+import { Flame, Star, Gamepad2, Share2, UserPlus, UserCheck, Shirt, Plane, Beer, Gift, Trophy, Zap, CalendarCheck, MessageCircle, Bell, Target, Clock, Sparkles, Calendar, RotateCw, ChevronRight, Swords, ShieldCheck, Ticket } from 'lucide-react'
 import GlassCard from '../components/GlassCard'
 import TierBadge from '../components/TierBadge'
 import ProgressBar from '../components/ProgressBar'
@@ -62,6 +62,49 @@ const NOTIFICATIONS = [
   { text: 'Weekly Challenge resets in 2 days', type: 'challenge', time: '6h ago' },
 ]
 
+const QUICK_ACTIONS = [
+  { icon: RotateCw, label: 'Spin the Wheel', nav: 'rewards', accent: '#D4A843' },
+  { icon: Gamepad2, label: 'Play Now', nav: 'games', accent: '#6CABDD' },
+  { icon: Gift, label: 'Claim Reward', nav: 'rewards', accent: '#e6ff00' },
+  { icon: UserPlus, label: 'Invite Friends', nav: null, bonus: '+50 credits', accent: '#22C55E' },
+]
+
+const CITYZENS_ACTIVITY = [
+  { initials: 'AM', name: 'Alex M.', action: 'just claimed Matchday Tickets', time: '2m ago', color: '#6CABDD' },
+  { initials: 'JK', name: 'Jordan K.', action: 'reached Centurion tier', time: '5m ago', color: '#D4A843' },
+  { initials: 'ST', name: 'Sam T.', action: 'played EA Sports FC 26', time: '8m ago', color: '#22C55E' },
+  { initials: 'PR', name: 'Priya R.', action: 'won 500 credits on Daily Spin', time: '12m ago', color: '#e6ff00' },
+  { initials: 'LW', name: 'Liam W.', action: 'unlocked Haaland Badge', time: '18m ago', color: '#6CABDD' },
+]
+
+const RECOMMENDATIONS = [
+  {
+    tag: 'Because you play EA FC 26',
+    title: 'Connect your Xbox for +25 credits',
+    accent: '#22C55E',
+    icon: Gamepad2,
+  },
+  {
+    tag: "You're 150 credits from Matchday tier",
+    title: 'Play 3 games to level up',
+    accent: '#6CABDD',
+    icon: Target,
+  },
+  {
+    tag: 'New Drop',
+    title: 'Haaland Hat-Trick Badge — only 7 left',
+    accent: '#D4A843',
+    icon: Sparkles,
+  },
+]
+
+const UPCOMING_EVENTS = [
+  { title: 'Man City vs Arsenal', date: 'Sat 29 Mar', icon: Swords, accent: '#6CABDD' },
+  { title: 'New Kit Room Drop', date: 'Mon 31 Mar', icon: Gift, accent: '#D4A843' },
+  { title: 'Double Credits Weekend', date: 'Apr 5–6', icon: Zap, accent: '#e6ff00' },
+  { title: 'Man City vs Liverpool', date: 'Sat 12 Apr', icon: Swords, accent: '#6CABDD' },
+]
+
 function SponsorBrand({ logoSrc, altText, Icon }) {
   const [failed, setFailed] = useState(false)
   if (failed || !logoSrc) {
@@ -112,6 +155,9 @@ export default function DashboardScreen({
   const nextTier = getNextTier(totalCreditsEarned)
   const [dailyCheckedIn, setDailyCheckedIn] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [homeScore, setHomeScore] = useState('')
+  const [awayScore, setAwayScore] = useState('')
+  const [predictionSubmitted, setPredictionSubmitted] = useState(false)
 
   const videoRef = useRef(null)
   const [currentVideo, setCurrentVideo] = useState(0)
@@ -223,6 +269,28 @@ export default function DashboardScreen({
 
       {/* Hero Carousel */}
       <Carousel slides={carouselSlides} />
+
+      {/* Quick Actions Bar */}
+      <div className="grid grid-cols-4 gap-3">
+        {QUICK_ACTIONS.map((action, i) => (
+          <button
+            key={i}
+            onClick={() => action.nav ? onNavigate(action.nav) : null}
+            className="bg-white/5 backdrop-blur-xl border border-white/15 rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-white/10 hover:border-white/25 transition-all hover:scale-[1.03] group"
+          >
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+              style={{ backgroundColor: `${action.accent}15` }}
+            >
+              <action.icon className="w-5 h-5 transition-all" style={{ color: action.accent }} />
+            </div>
+            <span className="text-white text-xs font-semibold text-center leading-tight">{action.label}</span>
+            {action.bonus && (
+              <span className="text-[10px] font-bold text-[#22C55E]">{action.bonus}</span>
+            )}
+          </button>
+        ))}
+      </div>
 
       {/* Daily Check-In + XP row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -386,6 +454,174 @@ export default function DashboardScreen({
           </div>
         </div>
       </GlassCard>
+
+      {/* Match Prediction */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Target className="w-5 h-5 text-[#6CABDD]" />
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white font-['Barlow_Condensed']">Predict the Score</h2>
+        </div>
+        <GlassCard className="relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#6CABDD]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-[#8899AA] text-xs uppercase tracking-wider">Next Fixture</p>
+              <span className="text-[10px] bg-white/10 text-[#8899AA] px-2 py-0.5 rounded-full">Premier League</span>
+            </div>
+            <p className="text-white font-bold text-lg mb-1">Man City vs Arsenal</p>
+            <div className="flex items-center gap-2 mb-5">
+              <Clock className="w-3.5 h-3.5 text-[#8899AA]" />
+              <p className="text-[#8899AA] text-sm">Sat 29 Mar, 15:00</p>
+            </div>
+            {predictionSubmitted ? (
+              <div className="text-center py-4">
+                <ShieldCheck className="w-8 h-8 text-[#e6ff00] mx-auto mb-2" />
+                <p className="text-[#e6ff00] font-bold">Prediction locked in!</p>
+                <p className="text-[#8899AA] text-sm mt-1">Man City {homeScore} – {awayScore} Arsenal</p>
+                <p className="text-[#8899AA] text-xs mt-2">+25 credits earned. Result revealed after full time.</p>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <div className="flex-1 flex items-center gap-3">
+                  <div className="flex-1">
+                    <label className="text-[#8899AA] text-xs block mb-1">Man City</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="9"
+                      value={homeScore}
+                      onChange={e => setHomeScore(e.target.value)}
+                      className="w-full bg-white/10 border border-white/15 rounded-xl text-center text-white text-2xl font-bold py-3 focus:outline-none focus:border-[#6CABDD] transition-all"
+                      placeholder="–"
+                    />
+                  </div>
+                  <span className="text-[#8899AA] text-lg font-bold mt-5">vs</span>
+                  <div className="flex-1">
+                    <label className="text-[#8899AA] text-xs block mb-1">Arsenal</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="9"
+                      value={awayScore}
+                      onChange={e => setAwayScore(e.target.value)}
+                      className="w-full bg-white/10 border border-white/15 rounded-xl text-center text-white text-2xl font-bold py-3 focus:outline-none focus:border-[#6CABDD] transition-all"
+                      placeholder="–"
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={() => setPredictionSubmitted(true)}
+                  disabled={homeScore === '' || awayScore === ''}
+                  className="bg-[#e6ff00] hover:bg-[#d4eb00] disabled:opacity-40 disabled:hover:bg-[#e6ff00] text-[#001838] font-bold py-3 px-5 rounded-xl text-sm transition-all hover:scale-[1.02] mt-5 whitespace-nowrap"
+                >
+                  Submit (+25 credits)
+                </button>
+              </div>
+            )}
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Cityzens Activity */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <MessageCircle className="w-5 h-5 text-[#6CABDD]" />
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white font-['Barlow_Condensed']">Cityzens Activity</h2>
+        </div>
+        <GlassCard className="!p-0 overflow-hidden">
+          <div className="divide-y divide-white/5">
+            {CITYZENS_ACTIVITY.map((item, i) => (
+              <div key={i} className="px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-all">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
+                  style={{ backgroundColor: `${item.color}20`, color: item.color }}
+                >
+                  {item.initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm">
+                    <span className="text-white font-medium">{item.name}</span>{' '}
+                    <span className="text-white/60">{item.action}</span>
+                  </p>
+                </div>
+                <span className="text-[10px] text-[#8899AA] shrink-0">{item.time}</span>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Recommended For You */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="w-5 h-5 text-[#D4A843]" />
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white font-['Barlow_Condensed']">Recommended for You</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {RECOMMENDATIONS.map((rec, i) => (
+            <GlassCard
+              key={i}
+              className="cursor-pointer hover:translate-y-[-2px] transition-all duration-300 relative overflow-hidden"
+              style={{ borderTopColor: `${rec.accent}50`, borderTopWidth: '2px' }}
+            >
+              <div
+                className="absolute top-0 right-0 w-24 h-24 rounded-full -translate-y-1/2 translate-x-1/2 opacity-10"
+                style={{ backgroundColor: rec.accent }}
+              />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-3">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${rec.accent}15` }}
+                  >
+                    <rec.icon className="w-4 h-4" style={{ color: rec.accent }} />
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: rec.accent }}>{rec.tag}</span>
+                </div>
+                <p className="text-white font-semibold text-sm">{rec.title}</p>
+                <div className="flex items-center gap-1 mt-3 text-[#8899AA] text-xs group-hover:text-white transition-all">
+                  <span>View</span>
+                  <ChevronRight className="w-3 h-3" />
+                </div>
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+
+      {/* Upcoming Events Timeline */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Calendar className="w-5 h-5 text-[#6CABDD]" />
+          <h2 className="text-xl font-bold uppercase tracking-wider text-white font-['Barlow_Condensed']">Upcoming Events</h2>
+        </div>
+        <GlassCard className="!p-0 overflow-hidden">
+          <div className="relative pl-8">
+            {/* Timeline line */}
+            <div className="absolute left-[18px] top-4 bottom-4 w-px bg-gradient-to-b from-[#6CABDD]/40 via-[#D4A843]/40 to-[#e6ff00]/40" />
+            {UPCOMING_EVENTS.map((event, i) => (
+              <div key={i} className="relative flex items-center gap-4 px-4 py-4 hover:bg-white/5 transition-all">
+                {/* Timeline dot */}
+                <div
+                  className="absolute left-[14px] w-[9px] h-[9px] rounded-full border-2 z-10"
+                  style={{ borderColor: event.accent, backgroundColor: '#0A0E17' }}
+                />
+                <div
+                  className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: `${event.accent}15` }}
+                >
+                  <event.icon className="w-4.5 h-4.5" style={{ color: event.accent }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium text-sm">{event.title}</p>
+                  <p className="text-[#8899AA] text-xs">{event.date}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-[#8899AA] shrink-0" />
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </div>
 
       {/* Partner Offers */}
       <div>

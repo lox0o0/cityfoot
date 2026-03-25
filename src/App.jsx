@@ -13,7 +13,7 @@ import { getTierForCredits, getNextTier } from './utils/credits'
 import { TIERS } from './data/tiers'
 
 const SCREENS_WITH_SIDEBAR = ['dashboard', 'games', 'leaderboard', 'rewards', 'account']
-const SCREENS_WITH_USER_CARD = ['dashboard']
+const SCREENS_WITH_USER_CARD = ['dashboard', 'games', 'leaderboard', 'rewards', 'account']
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('landing')
@@ -162,7 +162,7 @@ export default function App() {
 
       {/* Sidebar */}
       {showSidebar && (
-        <Sidebar currentScreen={currentScreen} onNavigate={handleNavigate} />
+        <Sidebar currentScreen={currentScreen} onNavigate={handleNavigate} streakWeeks={streakWeeks} />
       )}
 
       {/* Main Content */}
