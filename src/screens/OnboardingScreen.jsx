@@ -114,14 +114,18 @@ export default function OnboardingScreen({
                   onClick={() => handleSignIn('google')}
                   className="w-full bg-white/10 hover:bg-white/15 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02]"
                 >
-                  <img src="/assets/shared/icons/google.jpg" alt="Google" className="w-5 h-5 rounded-full" />
+                  <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center flex-shrink-0">
+                    <img src="/assets/shared/icons/google.jpg" alt="Google" className="w-7 h-7 object-contain" />
+                  </div>
                   Continue with Google
                 </button>
                 <button
                   onClick={() => handleSignIn('apple')}
                   className="w-full bg-white/10 hover:bg-white/15 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02]"
                 >
-                  <img src="/assets/shared/icons/apple.jpg" alt="Apple" className="w-5 h-5 rounded-full" />
+                  <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center flex-shrink-0">
+                    <img src="/assets/shared/icons/apple.jpg" alt="Apple" className="w-7 h-7 object-contain" />
+                  </div>
                   Continue with Apple
                 </button>
 
@@ -179,11 +183,11 @@ export default function OnboardingScreen({
                     >
                       <div className="flex items-center gap-3">
                         {platform.icon ? (
-                          <div className="w-8 h-8 rounded-full overflow-hidden bg-black flex items-center justify-center flex-shrink-0">
-                            <img src={platform.icon} alt={platform.name} className={`w-5 h-5 object-contain ${!connected ? 'grayscale' : ''}`} />
+                          <div className="w-12 h-12 rounded-full overflow-hidden bg-black flex items-center justify-center flex-shrink-0">
+                            <img src={platform.icon} alt={platform.name} className={`w-7 h-7 object-contain ${!connected ? 'grayscale' : ''}`} />
                           </div>
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                          <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                             {platform.abbr}
                           </div>
                         )}

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { Star } from 'lucide-react'
 import Sidebar from './components/Sidebar'
 import UserCard from './components/UserCard'
 import TierUpModal from './components/TierUpModal'
@@ -35,6 +36,19 @@ export default function App() {
 
   const handleNavigate = useCallback((screen) => {
     setCurrentScreen(screen)
+  }, [])
+
+  const handleRestart = useCallback(() => {
+    setCurrentScreen('landing')
+    setCreditBalance(700)
+    setTotalCreditsEarned(700)
+    setConnectedAccounts([])
+    setClaimedRewards([])
+    setUserName('')
+    setUserEmail('')
+    setGamesPlayed([])
+    setStreakWeeks(3)
+    setLandingIntroDone(false)
   }, [])
 
   const handleTierUp = useCallback((oldTotal, newTotal) => {
@@ -188,6 +202,17 @@ export default function App() {
           totalCreditsEarned={totalCreditsEarned}
           streakWeeks={streakWeeks}
         />
+      )}
+
+      {/* Restart star — visible on all screens except landing */}
+      {currentScreen !== 'landing' && (
+        <button
+          onClick={handleRestart}
+          className="fixed bottom-4 left-4 z-50 p-2 opacity-20 hover:opacity-40 transition-opacity"
+          title="Restart"
+        >
+          <Star className="w-3 h-3 text-white" />
+        </button>
       )}
     </div>
   )

@@ -525,7 +525,7 @@ export default function GamesHubScreen({
                   return (
                     <div
                       key={p}
-                      className="w-8 h-8 rounded-lg bg-black border border-white/10 flex items-center justify-center opacity-50 hover:opacity-100 hover:border-[#6CABDD]/50 transition-all duration-300 cursor-pointer group"
+                      className="w-8 h-8 rounded-lg bg-black border border-white/10 flex items-center justify-center opacity-70 hover:opacity-100 hover:border-[#6CABDD]/50 transition-all duration-300 cursor-pointer group"
                       title={p}
                     >
                       {iconSrc ? (

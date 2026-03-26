@@ -372,6 +372,10 @@ export default function RewardsStoreScreen({
   const [activeFilter, setActiveFilter] = useState('All')
   const [confirmReward, setConfirmReward] = useState(null)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [dropConfirm, setDropConfirm] = useState(null)
+  const [dropCelebration, setDropCelebration] = useState(null)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false)
+  const [notifAnimating, setNotifAnimating] = useState(false)
 
   const userTier = getTierForCredits(totalCreditsEarned)
 
@@ -393,6 +397,31 @@ export default function RewardsStoreScreen({
     setConfirmReward(null)
     setShowConfetti(true)
     setTimeout(() => setShowConfetti(false), 4000)
+  }
+
+  function handleDropClaim(drop) {
+    setDropConfirm(drop)
+  }
+
+  function confirmDropClaim() {
+    if (!dropConfirm) return
+    const drop = dropConfirm
+    setCreditBalance((b) => b - drop.cost)
+    setClaimedRewards((c) => [...c, drop.id])
+    setDropConfirm(null)
+    setDropCelebration(drop)
+    setShowConfetti(true)
+  }
+
+  function closeDropCelebration() {
+    setDropCelebration(null)
+    setShowConfetti(false)
+  }
+
+  function handleNotificationToggle() {
+    setNotificationsEnabled(true)
+    setNotifAnimating(true)
+    setTimeout(() => setNotifAnimating(false), 600)
   }
 
   return (
@@ -436,6 +465,163 @@ export default function RewardsStoreScreen({
                   className="flex-1 border border-white/20 text-white hover:bg-white/10 py-3 px-6 rounded-xl font-bold transition-all"
                 >
                   Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Drop Confirmation Modal ─────────────────────────── */}
+        {dropConfirm && (
+          <div className="fixed inset-0 z-[85] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div
+              className="bg-[#0A0E17] border border-[#D4A843]/40 rounded-2xl p-8 max-w-sm w-full mx-4 text-center relative"
+              style={{ animation: 'slide-in 0.3s ease-out' }}
+            >
+              <button
+                onClick={() => setDropConfirm(null)}
+                className="absolute top-4 right-4 text-[#8899AA] hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <Flame className="w-12 h-12 text-[#D4A843] mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">Claim Kit Room Drop?</h3>
+              <p className="text-white font-semibold text-lg mb-1">{dropConfirm.name}</p>
+              {dropConfirm.rarity === 'legendary' && (
+                <span className="inline-block text-[9px] font-bold uppercase tracking-widest px-3 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 mb-2">
+                  Never Restocked
+                </span>
+              )}
+              <p className="text-[#8899AA] text-sm mb-2">{dropConfirm.description}</p>
+              <p className="text-[#D4A843] font-bold text-lg mb-6">{dropConfirm.cost.toLocaleString()} City Credits</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={confirmDropClaim}
+                  className="flex-1 bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-3 px-6 rounded-xl transition-all hover:scale-[1.02]"
+                >
+                  Claim Drop
+                </button>
+                <button
+                  onClick={() => setDropConfirm(null)}
+                  className="flex-1 border border-white/20 text-white hover:bg-white/10 py-3 px-6 rounded-xl font-bold transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Drop Celebration Modal (FIFA Pack Opening) ──────── */}
+        {dropCelebration && (
+          <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/85 backdrop-blur-md">
+            <div
+              className="relative max-w-md w-full mx-4 text-center"
+              style={{ animation: 'count-pop 0.6s ease-out' }}
+            >
+              {/* Outer glow ring */}
+              <div
+                className="absolute inset-0 rounded-3xl"
+                style={{
+                  boxShadow: dropCelebration.rarity === 'legendary'
+                    ? '0 0 80px rgba(212,168,67,0.5), 0 0 160px rgba(212,168,67,0.2), inset 0 0 60px rgba(212,168,67,0.1)'
+                    : '0 0 60px rgba(108,171,221,0.4), 0 0 120px rgba(108,171,221,0.2), inset 0 0 40px rgba(108,171,221,0.1)',
+                }}
+              />
+
+              <div
+                className={`relative bg-gradient-to-b ${
+                  dropCelebration.rarity === 'legendary'
+                    ? 'from-[#D4A843]/20 via-[#0A0E17] to-[#D4A843]/10'
+                    : 'from-[#6CABDD]/20 via-[#0A0E17] to-[#6CABDD]/10'
+                } border-2 ${
+                  dropCelebration.rarity === 'legendary' ? 'border-[#D4A843]/60' : 'border-[#6CABDD]/60'
+                } rounded-3xl p-8 overflow-hidden`}
+              >
+                {/* Shimmer overlay */}
+                <div
+                  className="absolute inset-0 opacity-30"
+                  style={{
+                    background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.05) 50%, transparent 55%)',
+                    animation: 'shimmer 2s ease-in-out infinite',
+                  }}
+                />
+
+                {/* Rarity badge */}
+                <div className="relative mb-4">
+                  <span
+                    className={`inline-block text-xs font-extrabold uppercase tracking-[0.2em] px-5 py-1.5 rounded-full ${
+                      dropCelebration.rarity === 'legendary'
+                        ? 'bg-[#D4A843] text-black'
+                        : 'bg-[#6CABDD] text-white'
+                    }`}
+                    style={{
+                      boxShadow: dropCelebration.rarity === 'legendary'
+                        ? '0 0 20px rgba(212,168,67,0.6), 0 0 40px rgba(212,168,67,0.3)'
+                        : '0 0 20px rgba(108,171,221,0.6), 0 0 40px rgba(108,171,221,0.3)',
+                      animation: 'pulse-glow 2s ease-in-out infinite',
+                    }}
+                  >
+                    {(RARITY_STYLES[dropCelebration.rarity] || RARITY_STYLES.common).label || 'DROP'}
+                  </span>
+                </div>
+
+                {/* Haaland photo */}
+                <div className="relative mx-auto mb-5 w-48 h-48">
+                  <div
+                    className="absolute inset-0 rounded-2xl"
+                    style={{
+                      boxShadow: dropCelebration.rarity === 'legendary'
+                        ? '0 0 40px rgba(212,168,67,0.4)'
+                        : '0 0 40px rgba(108,171,221,0.4)',
+                    }}
+                  />
+                  <img
+                    src="/assets/shared/players/haaland.jpg"
+                    alt="Haaland"
+                    className={`w-full h-full object-cover rounded-2xl border-2 ${
+                      dropCelebration.rarity === 'legendary' ? 'border-[#D4A843]/60' : 'border-[#6CABDD]/60'
+                    }`}
+                  />
+                </div>
+
+                {/* Item name - large glowing gold text */}
+                <h2
+                  className="text-3xl font-black uppercase tracking-wider mb-2"
+                  style={{
+                    color: dropCelebration.rarity === 'legendary' ? '#D4A843' : '#6CABDD',
+                    textShadow: dropCelebration.rarity === 'legendary'
+                      ? '0 0 20px rgba(212,168,67,0.6), 0 0 40px rgba(212,168,67,0.3), 0 0 60px rgba(212,168,67,0.15)'
+                      : '0 0 20px rgba(108,171,221,0.6), 0 0 40px rgba(108,171,221,0.3)',
+                  }}
+                >
+                  {dropCelebration.name}
+                </h2>
+
+                {/* Description */}
+                <p className="text-[#8899AA] text-sm mb-4 max-w-xs mx-auto">
+                  {dropCelebration.description}
+                </p>
+
+                {/* Never Restocked badge for legendary */}
+                {dropCelebration.rarity === 'legendary' && (
+                  <div className="mb-5" style={{ animation: 'pulse-glow 2s ease-in-out infinite' }}>
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/40">
+                      Never Restocked
+                    </span>
+                  </div>
+                )}
+
+                {/* Close button */}
+                <button
+                  onClick={closeDropCelebration}
+                  className={`font-bold py-3.5 px-10 rounded-xl text-sm transition-all w-full uppercase tracking-wider mt-2 ${
+                    dropCelebration.rarity === 'legendary'
+                      ? 'bg-[#D4A843] hover:bg-[#c49a3a] text-black shadow-[0_0_24px_rgba(212,168,67,0.4)]'
+                      : 'bg-[#6CABDD] hover:bg-[#5B9ACC] text-white shadow-[0_0_24px_rgba(108,171,221,0.4)]'
+                  } hover:scale-[1.02]`}
+                >
+                  Claim Secured
                 </button>
               </div>
             </div>
@@ -565,7 +751,7 @@ export default function RewardsStoreScreen({
                       </div>
                     ) : (
                       <button
-                        onClick={() => handleClaim(drop)}
+                        onClick={() => handleDropClaim(drop)}
                         disabled={creditBalance < drop.cost}
                         className={`font-bold py-3 px-6 rounded-xl transition-all w-full uppercase tracking-wider text-sm ${
                           creditBalance >= drop.cost
@@ -731,8 +917,26 @@ export default function RewardsStoreScreen({
 
           <div className="text-center py-8">
             <p className="text-[#8899AA] text-sm mb-4">Want to never miss a drop?</p>
-            <button className="bg-[#6CABDD] hover:bg-[#5B9ACC] text-white font-bold py-3 px-8 rounded-xl text-sm transition-all hover:scale-[1.02] uppercase tracking-wider">
-              Enable Drop Notifications
+            <button
+              onClick={handleNotificationToggle}
+              disabled={notificationsEnabled}
+              className={`font-bold py-3 px-8 rounded-xl text-sm transition-all uppercase tracking-wider ${
+                notificationsEnabled
+                  ? 'bg-[#22C55E] text-white cursor-default'
+                  : 'bg-[#6CABDD] hover:bg-[#5B9ACC] text-white hover:scale-[1.02]'
+              }`}
+              style={notifAnimating ? {
+                animation: 'count-pop 0.5s ease-out',
+                boxShadow: '0 0 30px rgba(34,197,94,0.5), 0 0 60px rgba(34,197,94,0.2)',
+              } : {}}
+            >
+              {notificationsEnabled ? (
+                <span className="flex items-center gap-2 justify-center">
+                  <Check className="w-4 h-4" /> Notifications Enabled
+                </span>
+              ) : (
+                'Enable Drop Notifications'
+              )}
             </button>
           </div>
         </section>
