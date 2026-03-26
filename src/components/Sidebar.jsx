@@ -1,4 +1,4 @@
-import { Home, Gamepad2, Trophy, Gift, Shield, Flame } from 'lucide-react'
+import { Home, Gamepad2, Trophy, Gift, Shield } from 'lucide-react'
 import McCrest from './McCrest'
 
 const NAV_ITEMS = [
@@ -46,13 +46,7 @@ export default function Sidebar({ currentScreen, onNavigate, streakWeeks = 0 }) 
         })}
       </nav>
 
-      {/* Streak indicator at bottom */}
-      {streakWeeks > 0 && (
-        <div className="flex flex-col items-center gap-0.5 pb-2">
-          <Flame className="w-5 h-5 text-[#e6ff00]" style={{ animation: 'pulse-glow 2s ease-in-out infinite' }} />
-          <span className="text-[9px] font-bold text-[#e6ff00]">{streakWeeks}wk</span>
-        </div>
-      )}
+      {/* Streak moved to right-side UserCard */}
     </div>
   )
 }

@@ -169,11 +169,11 @@ export default function App() {
       <main
         className={`min-h-screen transition-all ${
           showSidebar ? 'ml-[70px]' : ''
-        } ${showUserCard ? 'mr-[280px]' : ''}`}
+        }`}
       >
         <div
           key={currentScreen}
-          className="min-h-screen"
+          className={`min-h-screen ${showUserCard ? 'pr-[280px]' : ''}`}
           style={{ animation: 'screen-enter 0.48s cubic-bezier(0.22, 1, 0.36, 1) both' }}
         >
           {renderScreen()}

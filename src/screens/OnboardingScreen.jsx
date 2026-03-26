@@ -231,99 +231,133 @@ export default function OnboardingScreen({
           {/* Step 3: Confirmation */}
           {step === 3 && (
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#22C55E]/20 flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-[#22C55E]" />
+              <div
+                className="w-20 h-20 rounded-full bg-[#22C55E]/20 flex items-center justify-center mx-auto mb-4"
+                style={{
+                  boxShadow: '0 0 40px rgba(34, 197, 94, 0.3), 0 0 80px rgba(34, 197, 94, 0.1)',
+                  animation: 'count-pop 0.5s ease-out',
+                }}
+              >
+                <Check className="w-10 h-10 text-[#22C55E]" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">You're in. Let's play.</h2>
-              <p className="text-[#8899AA] mb-6">Welcome to Man City Rewards</p>
+              <h2 className="text-3xl font-extrabold text-white mb-1 uppercase tracking-tight">You're in. Let's play.</h2>
+              <p className="text-[#6CABDD] mb-6 font-medium">Your journey to Legend starts now</p>
 
-              {/* Glowing Credits Counter */}
-              <div className="bg-white/5 rounded-xl p-4 mb-6">
-                <p className="text-[#8899AA] text-sm mb-1">Credits earned so far</p>
-                <p
-                  className="text-4xl font-extrabold bg-gradient-to-r from-[#6CABDD] via-[#e6ff00] to-[#D4A843] bg-clip-text text-transparent"
+              {/* Glowing Credits Counter — massive, unmissable */}
+              <div
+                className="relative bg-gradient-to-br from-[#6CABDD]/10 via-white/5 to-[#D4A843]/10 rounded-2xl p-6 mb-6 border border-[#e6ff00]/20 overflow-hidden"
+              >
+                {/* Animated glow orb behind the number */}
+                <div
+                  className="absolute inset-0 opacity-30"
                   style={{
-                    animation: 'count-pop 0.6s ease-out, pulse-glow 2s ease-in-out infinite',
-                    textShadow: '0 0 30px rgba(230, 255, 0, 0.4), 0 0 60px rgba(108, 171, 221, 0.2)',
-                    filter: 'drop-shadow(0 0 20px rgba(230, 255, 0, 0.3))',
+                    background: 'radial-gradient(circle at 50% 50%, rgba(230, 255, 0, 0.4) 0%, transparent 70%)',
+                    animation: 'pulse-glow 2s ease-in-out infinite',
+                  }}
+                />
+                <p className="relative text-[#8899AA] text-xs uppercase tracking-widest mb-2 font-bold">Your City Credits</p>
+                <p
+                  className="relative text-5xl font-extrabold bg-gradient-to-r from-[#6CABDD] via-[#e6ff00] to-[#D4A843] bg-clip-text text-transparent leading-none"
+                  style={{
+                    animation: 'count-pop 0.6s ease-out',
+                    filter: 'drop-shadow(0 0 30px rgba(230, 255, 0, 0.5)) drop-shadow(0 0 60px rgba(108, 171, 221, 0.3))',
                   }}
                 >
                   {totalOnboardingCredits}
                 </p>
-                <div className="mt-3 space-y-1 text-sm text-left">
+                <p className="relative text-[#e6ff00]/60 text-xs mt-1 font-medium">and counting</p>
+                <div className="relative mt-4 space-y-1 text-sm text-left">
                   <div className="flex justify-between text-[#8899AA]">
                     <span>Sign-up bonus</span>
-                    <span className="text-[#D4A843]">+50</span>
+                    <span className="text-[#e6ff00] font-bold">+50</span>
                   </div>
                   {connectedAccounts.map(id => {
                     const p = SOCIAL_PLATFORMS.find(s => s.id === id)
                     return (
                       <div key={id} className="flex justify-between text-[#8899AA]">
                         <span>{p.name}</span>
-                        <span className="text-[#D4A843]">+{p.credits}</span>
+                        <span className="text-[#e6ff00] font-bold">+{p.credits}</span>
                       </div>
                     )
                   })}
                 </div>
               </div>
 
-              {/* Reward Tiers — "Here's what you're playing for" */}
+              {/* Reward Tiers — escalating excitement */}
               <div className="mb-6">
-                <p className="text-[#e6ff00] text-sm font-bold mb-4 uppercase tracking-widest">Here's what you're playing for</p>
+                <p className="text-[#e6ff00] text-sm font-extrabold mb-1 uppercase tracking-widest">This is what you're unlocking</p>
+                <p className="text-[#8899AA] text-xs mb-4">Real rewards. Not points that expire.</p>
 
                 <div className="space-y-3">
-                  {/* Tier 1: Claimable NOW */}
-                  <div className="relative bg-white/5 border border-[#22C55E]/30 rounded-xl px-4 py-3 text-left overflow-hidden">
-                    <div className="absolute top-0 right-0 bg-[#22C55E] text-[8px] font-bold text-white uppercase tracking-wider px-2 py-0.5 rounded-bl-lg">Claim now</div>
+                  {/* Tier 1: Claimable NOW — green glow pulse */}
+                  <div
+                    className="relative bg-white/5 border border-[#22C55E]/40 rounded-xl px-4 py-3 text-left overflow-hidden"
+                    style={{
+                      boxShadow: '0 0 20px rgba(34, 197, 94, 0.15)',
+                      animation: 'slide-in 0.4s ease-out',
+                    }}
+                  >
+                    <div className="absolute top-0 right-0 bg-[#22C55E] text-[8px] font-bold text-white uppercase tracking-wider px-2.5 py-0.5 rounded-bl-lg" style={{ animation: 'pulse-glow 2s ease-in-out infinite' }}>Ready to claim</div>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                         <Image className="w-5 h-5 text-[#6CABDD]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm font-bold">Digital Wallpaper Pack</p>
-                        <p className="text-[#8899AA] text-xs">Exclusive Haaland & squad wallpapers</p>
+                        <p className="text-white text-sm font-bold">Exclusive Digital Wallpaper Pack</p>
+                        <p className="text-[#8899AA] text-xs">Haaland, Foden & squad — 4K, mobile & desktop</p>
                       </div>
                       <span className="text-[#22C55E] text-sm font-bold whitespace-nowrap">50 credits</span>
                     </div>
                   </div>
 
-                  {/* Tier 2: Within reach ~200 credits */}
-                  <div className="relative bg-white/5 border border-[#D4A843]/20 rounded-xl px-4 py-3 text-left overflow-hidden">
-                    <div className="absolute top-0 right-0 bg-[#D4A843] text-[8px] font-bold text-[#001838] uppercase tracking-wider px-2 py-0.5 rounded-bl-lg">Almost there</div>
+                  {/* Tier 2: Within reach ~200 credits — Puma voucher */}
+                  <div
+                    className="relative bg-white/5 border border-[#D4A843]/25 rounded-xl px-4 py-3 text-left overflow-hidden"
+                    style={{ animation: 'slide-in 0.5s ease-out' }}
+                  >
+                    <div className="absolute top-0 right-0 bg-[#D4A843] text-[8px] font-bold text-[#001838] uppercase tracking-wider px-2.5 py-0.5 rounded-bl-lg">Almost there</div>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                         <img src="/assets/shared/sponsors/puma-white.png" alt="Puma" className="w-6 h-6 object-contain mix-blend-lighten" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-white text-sm font-bold">Puma x Man City Voucher</p>
-                        <p className="text-[#8899AA] text-xs">{'\u00A3'}10 off any Puma x Man City product</p>
+                        <p className="text-[#8899AA] text-xs">{'\u00A3'}15 off any Puma x Man City product</p>
                       </div>
                       <span className="text-[#D4A843] text-sm font-bold whitespace-nowrap">200 credits</span>
                     </div>
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#D4A843] rounded-full transition-all" style={{ width: `${Math.min(100, (totalOnboardingCredits / 200) * 100)}%` }} />
+                      <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-[#D4A843] to-[#e6ff00] rounded-full transition-all"
+                          style={{ width: `${Math.min(100, (totalOnboardingCredits / 200) * 100)}%` }}
+                        />
                       </div>
                       <span className="text-[10px] text-[#D4A843] font-bold">{Math.max(0, 200 - totalOnboardingCredits)} to go</span>
                     </div>
                   </div>
 
-                  {/* Tier 3: The dream ~2500 credits */}
+                  {/* Tier 3: The dream — Signed Jersey with gold shimmer */}
                   <div
-                    className="relative bg-white/5 border border-[#D4A843]/10 rounded-xl px-4 py-3 text-left overflow-hidden"
-                    style={{ animation: 'legendary-shimmer 3s ease-in-out infinite' }}
+                    className="relative bg-gradient-to-r from-[#D4A843]/5 to-white/5 border border-[#D4A843]/30 rounded-xl px-4 py-4 text-left overflow-hidden"
+                    style={{ animation: 'slide-in 0.6s ease-out' }}
                   >
-                    <div className="absolute top-0 right-0 bg-gradient-to-r from-[#D4A843] to-[#e6ff00] text-[8px] font-bold text-[#001838] uppercase tracking-wider px-2 py-0.5 rounded-bl-lg">Legendary</div>
+                    {/* Shimmer overlay */}
+                    <div className="absolute inset-0 opacity-20" style={{ background: 'linear-gradient(110deg, transparent 33%, rgba(212, 168, 67, 0.3) 50%, transparent 67%)', backgroundSize: '200% 100%', animation: 'shimmer 3s ease-in-out infinite' }} />
+                    <div className="absolute top-0 right-0 bg-gradient-to-r from-[#D4A843] to-[#e6ff00] text-[8px] font-extrabold text-[#001838] uppercase tracking-wider px-2.5 py-0.5 rounded-bl-lg">Legendary</div>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                        <img src="/assets/shared/logos/Manchester_City_FC_badge.svg.png" alt="Man City" className="w-6 h-6 object-contain" />
+                      <div
+                        className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-[#D4A843]/30"
+                        style={{ boxShadow: '0 0 15px rgba(212, 168, 67, 0.2)' }}
+                      >
+                        <Pen className="w-6 h-6 text-[#D4A843]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm font-bold">Signed Man City Jersey</p>
-                        <p className="text-[#8899AA] text-xs">Authenticated 25/26 squad signatures</p>
+                        <p className="text-white font-bold">Signed Man City Jersey</p>
+                        <p className="text-[#D4A843] text-xs font-medium">Authenticated 25/26 first-team signatures</p>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-[#D4A843] text-sm font-bold">2,500</span>
+                        <span className="text-[#D4A843] text-lg font-extrabold">2,500</span>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Lock className="w-2.5 h-2.5 text-[#8899AA]" />
                           <span className="text-[9px] text-[#8899AA]">Centurion Tier</span>
@@ -333,15 +367,18 @@ export default function OnboardingScreen({
                   </div>
                 </div>
 
-                <p className="text-[#8899AA] text-xs mt-3">Play games, connect platforms, complete challenges — credits stack fast</p>
+                <p className="text-[#8899AA] text-[11px] mt-3">Play games, connect platforms, complete challenges — credits stack fast</p>
               </div>
 
               <button
                 onClick={handleFinish}
-                className="w-full bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-bold py-3 px-8 rounded-xl transition-all hover:scale-[1.02]"
-                style={{ animation: 'pulse-glow 2s ease-in-out infinite' }}
+                className="w-full bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] font-extrabold py-4 px-8 rounded-xl text-lg transition-all hover:scale-[1.02]"
+                style={{
+                  animation: 'pulse-glow 2s ease-in-out infinite',
+                  boxShadow: '0 0 30px rgba(230, 255, 0, 0.3), 0 0 60px rgba(230, 255, 0, 0.1)',
+                }}
               >
-                Go to Dashboard <ChevronRight className="w-5 h-5 inline ml-1" />
+                Let's Go <ChevronRight className="w-5 h-5 inline ml-1" />
               </button>
             </div>
           )}
