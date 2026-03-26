@@ -111,12 +111,14 @@ function SponsorBrand({ logoSrc, altText, Icon }) {
     return <Icon className="w-8 h-8 text-[#6CABDD] mb-3" />
   }
   return (
-    <img
-      src={logoSrc}
-      alt={altText || ''}
-      className="h-8 object-contain mb-3 opacity-90 mix-blend-lighten"
-      onError={() => setFailed(true)}
-    />
+    <div className="inline-block bg-black rounded-lg px-3 py-1.5 mb-3">
+      <img
+        src={logoSrc}
+        alt={altText || ''}
+        className="h-6 object-contain opacity-90"
+        onError={() => setFailed(true)}
+      />
+    </div>
   )
 }
 
@@ -368,7 +370,9 @@ export default function DashboardScreen({
                   <div className="flex items-center gap-2">
                     <p className="text-white font-medium text-sm">{act.label}</p>
                     {act.socialIcons && act.socialIcons.map((src, j) => (
-                      <img key={j} src={src} alt="" className="w-4 h-4 rounded-full object-cover" />
+                      <div key={j} className="w-5 h-5 rounded-full bg-black flex items-center justify-center overflow-hidden">
+                        <img src={src} alt="" className="w-3.5 h-3.5 object-contain" />
+                      </div>
                     ))}
                   </div>
                   <p className="text-[#8899AA] text-xs">{act.desc}</p>

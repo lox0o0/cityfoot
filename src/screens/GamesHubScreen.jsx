@@ -222,9 +222,13 @@ export default function GamesHubScreen({
     setTimeout(() => setShowCredit(false), 1500)
   }
 
-  function PlatformIcon({ platform, className }) {
+  function PlatformIcon({ platform, className, wrapperClassName }) {
     if (platform.icon) {
-      return <img src={platform.icon} alt={platform.name} className={`${className} object-contain`} />
+      return (
+        <div className={wrapperClassName || ''}>
+          <img src={platform.icon} alt={platform.name} className={`${className} object-contain`} />
+        </div>
+      )
     }
     const Icon = platform.lucideIcon || Gamepad2
     return <Icon className={`${className} text-[#6CABDD]`} />
@@ -263,7 +267,7 @@ export default function GamesHubScreen({
                     onClick={() => handlePlatformSelect(connectingGame, p)}
                     className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#6CABDD]/50 hover:bg-white/10 transition-all text-left"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center overflow-hidden">
                       {iconSrc ? (
                         <img src={iconSrc} alt={p} className="w-5 h-5 object-contain" />
                       ) : (
@@ -348,7 +352,9 @@ export default function GamesHubScreen({
           <div className="bg-[#0A0E17] border border-white/15 rounded-2xl p-8 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <PlatformIcon platform={expandedPlatform} className="w-6 h-6" />
+                <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center overflow-hidden">
+                  <PlatformIcon platform={expandedPlatform} className="w-5 h-5" />
+                </div>
                 <h3 className="text-xl font-bold uppercase text-white">{expandedPlatform.name}</h3>
               </div>
               <button onClick={() => setExpandedPlatform(null)} className="text-white/50 hover:text-white">
@@ -412,7 +418,7 @@ export default function GamesHubScreen({
         {!connectedPlatforms.includes('discord') && (
           <GlassCard className="!border-[#5865F2]/40 bg-[#5865F2]/5 mb-4 cursor-pointer hover:bg-[#5865F2]/10 transition-all" onClick={() => setExpandedPlatform(GAMING_PLATFORMS[0])}>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#5865F2]/20 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-black flex items-center justify-center shrink-0">
                 <img src="/assets/shared/icons/discord.png" alt="Discord" className="w-7 h-7 object-contain" />
               </div>
               <div className="flex-1">
@@ -445,7 +451,7 @@ export default function GamesHubScreen({
                 }`}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center overflow-hidden">
                     <PlatformIcon platform={platform} className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -519,7 +525,7 @@ export default function GamesHubScreen({
                   return (
                     <div
                       key={p}
-                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center opacity-50 hover:opacity-100 hover:border-[#6CABDD]/50 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
+                      className="w-8 h-8 rounded-lg bg-black border border-white/10 flex items-center justify-center opacity-50 hover:opacity-100 hover:border-[#6CABDD]/50 transition-all duration-300 cursor-pointer group"
                       title={p}
                     >
                       {iconSrc ? (
@@ -577,7 +583,7 @@ export default function GamesHubScreen({
               <button
                 key={i}
                 onClick={handleShareMoment}
-                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:border-[#6CABDD]/50 hover:bg-white/10 flex items-center justify-center transition-all"
+                className="w-10 h-10 rounded-xl bg-black border border-white/10 hover:border-[#6CABDD]/50 flex items-center justify-center transition-all"
               >
                 <img src={src} alt="" className="w-5 h-5 object-contain" />
               </button>

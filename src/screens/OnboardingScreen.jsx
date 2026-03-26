@@ -9,7 +9,7 @@ const SOCIAL_PLATFORMS = [
   { id: 'instagram', name: 'Instagram', credits: 25, abbr: 'IG', handle: '@cityfan', icon: '/assets/shared/icons/instagram.png' },
   { id: 'facebook', name: 'Facebook', credits: 25, abbr: 'FB', handle: 'City Fan', icon: '/assets/shared/icons/facebook.png' },
   { id: 'discord', name: 'Discord', credits: 20, abbr: 'DC', handle: 'CityFan#1234', icon: '/assets/shared/icons/discord.png' },
-  { id: 'youtube', name: 'YouTube', credits: 20, abbr: 'YT', handle: 'CityFan', icon: '/assets/shared/icons/youtube.png' },
+  { id: 'youtube', name: 'YouTube', credits: 20, abbr: 'YT', handle: 'CityFan', icon: '/assets/shared/icons/youtube.jpg' },
 ]
 
 export default function OnboardingScreen({
@@ -179,11 +179,11 @@ export default function OnboardingScreen({
                     >
                       <div className="flex items-center gap-3">
                         {platform.icon ? (
-                          <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 flex items-center justify-center flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full overflow-hidden bg-black flex items-center justify-center flex-shrink-0">
                             <img src={platform.icon} alt={platform.name} className={`w-5 h-5 object-contain ${!connected ? 'grayscale' : ''}`} />
                           </div>
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                             {platform.abbr}
                           </div>
                         )}
@@ -317,8 +317,8 @@ export default function OnboardingScreen({
                   >
                     <div className="absolute top-0 right-0 bg-[#D4A843] text-[8px] font-bold text-[#001838] uppercase tracking-wider px-2.5 py-0.5 rounded-bl-lg">Almost there</div>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                        <img src="/assets/shared/sponsors/puma-white.png" alt="Puma" className="w-6 h-6 object-contain mix-blend-lighten" />
+                      <div className="w-10 h-10 rounded-lg bg-black flex items-center justify-center shrink-0">
+                        <img src="/assets/shared/sponsors/puma-white.png" alt="Puma" className="w-6 h-6 object-contain" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-white text-sm font-bold">Puma x Man City Voucher</p>

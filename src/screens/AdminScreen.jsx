@@ -6,7 +6,7 @@ const SOCIAL_NAMES = {
   instagram: { name: 'Instagram', handle: '@cityfan', icon: '/assets/shared/icons/instagram.png' },
   facebook: { name: 'Facebook', handle: 'City Fan', icon: '/assets/shared/icons/facebook.png' },
   discord: { name: 'Discord', handle: 'CityFan#1234', icon: '/assets/shared/icons/discord.png' },
-  youtube: { name: 'YouTube', handle: 'CityFan', icon: null },
+  youtube: { name: 'YouTube', handle: 'CityFan', icon: '/assets/shared/icons/youtube.jpg' },
 }
 
 export default function AdminScreen({
@@ -100,7 +100,9 @@ export default function AdminScreen({
                 <div key={id} className="flex items-center justify-between bg-white/5 rounded-lg px-4 py-2.5">
                   <div className="flex items-center gap-2">
                     {info.icon ? (
-                      <img src={info.icon} alt="" className={`w-5 h-5 rounded-full object-cover ${!connected ? 'grayscale opacity-50' : ''}`} />
+                      <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <img src={info.icon} alt="" className={`w-4 h-4 object-contain ${!connected ? 'grayscale opacity-50' : ''}`} />
+                      </div>
                     ) : connected ? (
                       <Check className="w-4 h-4 text-[#22C55E]" />
                     ) : (
