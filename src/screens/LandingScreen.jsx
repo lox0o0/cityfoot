@@ -3,8 +3,6 @@ import { Gamepad2, TrendingUp, Gift, ChevronRight, Trophy, Ticket, Shirt, MapPin
 import McCrest from '../components/McCrest'
 import TopLeftCrest from '../components/TopLeftCrest'
 
-const INTRO_VIDEO = '/assets/landing/videos/Untitled.mp4'
-
 const HERO_VIDEOS = [
   '/assets/landing/videos/Untitled.mp4',
   '/assets/landing/videos/vid2.mp4',
@@ -53,37 +51,8 @@ const PILLARS = [
   },
 ]
 
-function LandingIntro({ onEnter }) {
-  return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-black">
-      <video
-        className="absolute inset-0 z-0 w-full h-full object-cover"
-        autoPlay
-        muted
-        playsInline
-        onEnded={onEnter}
-        onError={onEnter}
-      >
-        <source src={INTRO_VIDEO} type="video/mp4" />
-      </video>
-      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
-      <TopLeftCrest variant="overlay" />
-      <div className="relative z-10 mt-auto mb-10 flex justify-center px-6">
-        <button
-          type="button"
-          onClick={onEnter}
-          className="border border-white/30 text-white hover:bg-white/10 font-bold py-3 px-10 rounded-xl transition-all backdrop-blur-sm"
-        >
-          Skip
-        </button>
-      </div>
-    </div>
-  )
-}
-
 export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFinished }) {
   const [demoStarted, setDemoStarted] = useState(false)
-  const [phase, setPhase] = useState(skipIntro ? 'home' : 'intro')
   const [prizeIndex, setPrizeIndex] = useState(0)
   const [currentVideo, setCurrentVideo] = useState(0)
   const videoRef = useRef(null)
@@ -118,11 +87,6 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
     video.play().catch(() => {})
   }, [currentVideo])
 
-  function finishIntro() {
-    setPhase('home')
-    onIntroFinished?.()
-  }
-
   if (!demoStarted) {
     return (
       <div className="min-h-screen bg-[#0A0E17] flex items-end justify-end p-4">
@@ -131,10 +95,6 @@ export default function LandingScreen({ onNavigate, skipIntro = false, onIntroFi
         </button>
       </div>
     )
-  }
-
-  if (phase === 'intro') {
-    return <LandingIntro onEnter={finishIntro} />
   }
 
   return (
