@@ -220,13 +220,30 @@ function SpinWheel({ setCreditBalance }) {
 
 // ─── Mystery Kit Bag ─────────────────────────────────────────────────
 function MysteryBox({ creditBalance, setCreditBalance }) {
-  const [opening, setOpening] = useState(false)
+  const [phase, setPhase] = useState('idle') // idle | opening | revealed
   const [revealed, setRevealed] = useState(null)
-  const [flipped, setFlipped] = useState(false)
+
+  const rarityColors = {
+    common: 'text-white/70',
+    rare: 'text-[#6CABDD]',
+    legendary: 'text-[#D4A843]',
+  }
+
+  const rarityGlow = {
+    common: '',
+    rare: '0 0 30px rgba(108, 171, 221, 0.4), 0 0 60px rgba(108, 171, 221, 0.2)',
+    legendary: '0 0 30px rgba(212, 168, 67, 0.5), 0 0 60px rgba(212, 168, 67, 0.2)',
+  }
+
+  const rarityBorder = {
+    common: 'border-white/30',
+    rare: 'border-[#6CABDD]/60',
+    legendary: 'border-[#D4A843]/60',
+  }
 
   function handleOpen() {
-    if (opening || creditBalance < MYSTERY_BOX.cost) return
-    setOpening(true)
+    if (phase !== 'idle' || creditBalance < MYSTERY_BOX.cost) return
+    setPhase('opening')
     setCreditBalance((b) => b - MYSTERY_BOX.cost)
 
     setTimeout(() => {
@@ -241,26 +258,13 @@ function MysteryBox({ creditBalance, setCreditBalance }) {
         }
       }
       setRevealed(prize)
-      setFlipped(true)
-      setOpening(false)
-    }, 1800)
+      setPhase('revealed')
+    }, 2000)
   }
 
   function handleReset() {
-    setFlipped(false)
+    setPhase('idle')
     setRevealed(null)
-  }
-
-  const rarityColors = {
-    common: 'text-white/70',
-    rare: 'text-[#6CABDD]',
-    legendary: 'text-[#D4A843]',
-  }
-
-  const rarityBorder = {
-    common: 'border-white/30',
-    rare: 'border-[#6CABDD]',
-    legendary: 'border-[#D4A843]',
   }
 
   return (
@@ -269,67 +273,89 @@ function MysteryBox({ creditBalance, setCreditBalance }) {
       <h3 className="text-xl font-extrabold text-white uppercase tracking-wider mb-1">Mystery Kit Bag</h3>
       <p className="text-[#8899AA] text-xs mb-5">Open for a random reward — Common, Rare, or Legendary</p>
 
-      {/* Card flip area */}
-      <div className="relative mx-auto mb-5" style={{ perspective: '600px', minHeight: '180px' }}>
-        <div
-          className="w-full transition-transform duration-700"
-          style={{
-            transformStyle: 'preserve-3d',
-            transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-          }}
-        >
-          {/* Front — mystery */}
+      {/* Content area — switches between states */}
+      <div className="mb-5">
+        {phase === 'idle' && (
           <div
-            className="absolute inset-0 rounded-xl border-2 border-[#6CABDD]/40 bg-gradient-to-b from-[#6CABDD]/10 to-transparent flex flex-col items-center justify-center p-4"
-            style={{ backfaceVisibility: 'hidden' }}
+            className="rounded-xl border border-[#6CABDD]/30 bg-gradient-to-b from-[#6CABDD]/5 to-transparent p-5"
+            style={{ animation: 'slide-in 0.3s ease-out' }}
           >
-            <div className="text-6xl font-extrabold text-[#6CABDD]/60 mb-3">?</div>
-            <div className="space-y-1.5 w-full">
+            <div className="space-y-2">
               {MYSTERY_BOX.possibleRewards.map((r, i) => (
-                <div key={i} className="flex items-center justify-between text-xs px-3">
-                  <span className="text-white/60">{r.name}</span>
-                  <span className={`font-bold ${rarityColors[r.rarity]}`}>{r.chance}</span>
+                <div key={i} className="flex items-center justify-between text-sm px-2 py-1 rounded-lg hover:bg-white/5 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${
+                      r.rarity === 'legendary' ? 'bg-[#D4A843]' : r.rarity === 'rare' ? 'bg-[#6CABDD]' : 'bg-white/40'
+                    }`} />
+                    <span className="text-white/80">{r.name}</span>
+                  </div>
+                  <span className={`font-bold text-xs ${rarityColors[r.rarity]}`}>{r.chance}</span>
                 </div>
               ))}
             </div>
           </div>
+        )}
 
-          {/* Back — revealed prize */}
-          <div
-            className={`absolute inset-0 rounded-xl border-2 ${
-              revealed ? rarityBorder[revealed.rarity] : 'border-white/20'
-            } bg-gradient-to-b from-white/10 to-transparent flex flex-col items-center justify-center p-4`}
-            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-          >
-            {revealed && (
-              <div style={{ animation: 'count-pop 0.5s ease-out 0.6s both' }}>
-                <Gift className={`w-10 h-10 mx-auto mb-2 ${rarityColors[revealed.rarity]}`} />
-                <p className={`font-bold text-xl ${rarityColors[revealed.rarity]}`}>{revealed.name}</p>
-                <p className="text-xs uppercase tracking-widest text-white/40 mt-1">{revealed.rarity}</p>
-                <button
-                  onClick={handleReset}
-                  className="mt-3 text-xs text-[#8899AA] hover:text-white flex items-center gap-1 mx-auto"
-                >
-                  <RotateCw className="w-3 h-3" /> Open another
-                </button>
-              </div>
-            )}
+        {phase === 'opening' && (
+          <div className="rounded-xl border border-[#6CABDD]/30 bg-gradient-to-b from-[#6CABDD]/10 to-transparent p-8 flex flex-col items-center justify-center">
+            <div className="relative">
+              <Package className="w-16 h-16 text-[#6CABDD]" style={{ animation: 'pulse-glow 0.6s ease-in-out infinite' }} />
+              <div className="absolute inset-0 rounded-full" style={{ animation: 'shimmer 1s ease-in-out infinite', background: 'radial-gradient(circle, rgba(108,171,221,0.3) 0%, transparent 70%)' }} />
+            </div>
+            <p className="text-[#6CABDD] font-bold mt-4 text-sm">Opening...</p>
+            <div className="flex items-center gap-1.5 mt-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#6CABDD] animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#6CABDD] animate-pulse" style={{ animationDelay: '0.2s' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#6CABDD] animate-pulse" style={{ animationDelay: '0.4s' }} />
+            </div>
           </div>
-        </div>
+        )}
+
+        {phase === 'revealed' && revealed && (
+          <div
+            className={`rounded-xl border-2 ${rarityBorder[revealed.rarity]} p-6 flex flex-col items-center justify-center`}
+            style={{
+              animation: 'count-pop 0.5s ease-out',
+              boxShadow: rarityGlow[revealed.rarity],
+              background: revealed.rarity === 'legendary'
+                ? 'linear-gradient(135deg, rgba(212,168,67,0.1) 0%, transparent 50%, rgba(212,168,67,0.05) 100%)'
+                : revealed.rarity === 'rare'
+                ? 'linear-gradient(135deg, rgba(108,171,221,0.1) 0%, transparent 50%, rgba(108,171,221,0.05) 100%)'
+                : 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%)',
+            }}
+          >
+            <Gift className={`w-12 h-12 mb-3 ${rarityColors[revealed.rarity]}`} />
+            <p className={`font-extrabold text-2xl ${rarityColors[revealed.rarity]}`}>{revealed.name}</p>
+            <span className={`text-[10px] font-bold uppercase tracking-widest mt-1 px-3 py-0.5 rounded-full ${
+              revealed.rarity === 'legendary' ? 'bg-[#D4A843]/20 text-[#D4A843]'
+              : revealed.rarity === 'rare' ? 'bg-[#6CABDD]/20 text-[#6CABDD]'
+              : 'bg-white/10 text-white/50'
+            }`}>
+              {revealed.rarity}
+            </span>
+            <p className="text-[#8899AA] text-xs mt-2">Added to your account</p>
+            <button
+              onClick={handleReset}
+              className="mt-4 text-xs text-[#8899AA] hover:text-white flex items-center gap-1.5 transition-colors"
+            >
+              <RotateCw className="w-3.5 h-3.5" /> Open another
+            </button>
+          </div>
+        )}
       </div>
 
       <button
         onClick={handleOpen}
-        disabled={opening || creditBalance < MYSTERY_BOX.cost}
+        disabled={phase === 'opening' || creditBalance < MYSTERY_BOX.cost}
         className={`font-bold py-3.5 px-10 rounded-xl text-sm transition-all w-full uppercase tracking-wider ${
           creditBalance < MYSTERY_BOX.cost
             ? 'bg-white/5 text-[#8899AA] cursor-not-allowed'
-            : opening
+            : phase === 'opening'
             ? 'bg-[#e6ff00]/60 text-[#001838] cursor-wait'
             : 'bg-[#e6ff00] hover:bg-[#d4eb00] text-[#001838] hover:scale-[1.02] shadow-[0_0_24px_rgba(230,255,0,0.3)]'
         }`}
       >
-        {opening ? 'Opening...' : `Open Mystery Kit Bag (${MYSTERY_BOX.cost} credits)`}
+        {phase === 'opening' ? 'Opening...' : `Open Mystery Kit Bag (${MYSTERY_BOX.cost} credits)`}
       </button>
     </div>
   )
